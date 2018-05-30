@@ -1,0 +1,27 @@
+{
+  "name": "makerjs-leveraging-bot",
+  "description": "Makerjs Leveraging Bot Demo",
+  "version": "0.1.0",
+  "private": true,
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "nodemon lib/index.js --exec babel-node --presets es2015,stage-2",
+    "build": "babel lib -d dist",
+    "serve": "node dist/index.js",
+    "test": "mocha --compilers js:babel-register"
+  },
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "@makerdao/makerdao-exchange-integration":
+      "github:makerdao/makerdao-integration-poc"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.11.4",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-2": "^6.11.0",
+    "babel-register": "^6.11.6",
+    "mocha": "^3.0.1",
+    "nodemon": "^1.10.0"
+  }
+}
