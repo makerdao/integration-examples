@@ -11,9 +11,15 @@ module.exports = async function() {
     process.exit(1)
   }
 
+  const targetRatio = Number(argv.t || argv['target-ratio'])
+  if (isNaN(targetRatio)) {
+    console.error('You must specify a target ratio with -t or --target-ratio.')
+    process.exit(1)
+  }
+
   async function run() {
     try {
-      await topup(cdpId)
+      await topup(cdpId, {targetRatio})
     } catch (e) {
       console.error(verbose ? e.stack : e.message)
     }
