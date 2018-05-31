@@ -23,7 +23,7 @@ module.exports = async function(cdpId, options) {
   const debt = await cdp.getDebtAmount()
   console.log(`debt: ${debt} DAI`)
 
-  const collateralPrice = maker._container.service('priceFeed');
+  const collateralPrice = await maker.service('priceFeed').getEthPrice();
   console.log(`ETH/USD: ${collateralPrice}`)
 
   const ratio = collateralPrice * collateral / debt
