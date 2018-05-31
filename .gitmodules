@@ -1,3 +1,9 @@
 [submodule "react"]
 	path = react
 	url = https://github.com/ethanbennett/exchange-integration-example.git
+[submodule "exchange-integration-example"]
+	path = exchange-integration-example
+	url = https://github.com/ethanbennett/exchange-integration-example.git
+[submodule "react-example"]
+	path = react-example
+	url = https://github.com/ethanbennett/exchange-integration-example.git
