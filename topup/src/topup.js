@@ -4,10 +4,6 @@ const {
 } = require('@makerdao/makerdao-exchange-integration')
 
 module.exports = async function(cdpId, options) {
-  // options could include:
-  // - target collateralization rate
-  // - margin of error (i.e. don't change anything if within X%)
-
   const targetRatio = Number(options.targetRatio)
   if (isNaN(targetRatio)) throw new Error("Invalid value for targetRatio")
 
@@ -35,7 +31,7 @@ module.exports = async function(cdpId, options) {
     const addAmount =
       (targetRatio * debt - collateralPrice * collateral) / collateralPrice;
     console.log(`ratio is ${ratio}; adding ${addAmount} ETH.`)
-    // await cdp.lockEth(addAmount)
+    await cdp.lockEth(addAmount.toString())
   } else {
     console.log(`ratio is ${ratio}; doing nothing.`)
   }
