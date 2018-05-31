@@ -24,7 +24,7 @@ module.exports = async function(cdpId, options) {
   const collateral = await cdp.getCollateralAmount()
   console.log(`collateral: ${collateral} ETH`)
 
-  const debt = 200 //await cdp.getDebtAmount() // TODO
+  const debt = await cdp.getDebtAmount()
   console.log(`debt: ${debt} DAI`)
 
   const collateralPrice = 500 // i.e. ETH/USD; TODO
