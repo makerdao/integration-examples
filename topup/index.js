@@ -1,5 +1,3 @@
-require('babel-register')
-
 const topup = require('./src/topup')
 module.exports = topup
 

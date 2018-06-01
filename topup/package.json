@@ -1,11 +1,8 @@
 {
   "private": true,
   "dependencies": {
-    "@makerdao/makerdao-exchange-integration": "github:makerdao/makerdao-integration-poc",
-    "babel-register": "^6.26.0",
+    "@makerdao/makerdao-exchange-integration": "latest",
+    "minimist": "^1.2.0",
     "round-to": "^3.0.0"
-  },
-  "devDependencies": {
-    "minimist": "^1.2.0"
   }
 }
