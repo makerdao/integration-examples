@@ -2,16 +2,14 @@
   Integration/ Maker.js Examples
 </h1>
 
-# Projects
-
-## leverage
+### leverage
 
 Lock ETH -> Draw DAI -> Exchange Dai for ETH -> repeat
 
-## react-example 
+### react-example 
 
 Interact with Maker.js in the browser
 
-## topup
+### topup
 
 Prevent your CDP from getting liquidated (automated risk management)
