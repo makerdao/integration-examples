@@ -1,2 +1,17 @@
-# integration-examples
-A set of examples of how to use the Maker.js library with various purposes and configs
+<h1 align="center">
+  Integration/ Maker.js Examples
+</h1>
+
+# Projects
+
+## leverage
+
+Lock ETH -> Draw DAI -> Exchange Dai for ETH -> repeat
+
+## react-example 
+
+Interact with Maker.js in the browser
+
+## topup
+
+Prevent your CDP from getting liquidated (automated risk management)
