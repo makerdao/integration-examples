@@ -1,111 +1,125 @@
 const http = require("http");
 var url = require("url");
-const assert = require("assert");
+const invariant = require("invariant");
+
 const {
   Maker,
   ConfigFactory
 } = require("@makerdao/makerdao-exchange-integration");
 
-const config = ConfigFactory.create("decentralized-oasis-without-proxies");
+// descriptive logging
+const debug = require("debug");
+const log = {
+  state: debug("leverage:state"),
+  action: debug("leverage:action"),
+  title: debug("leverage:header")
+};
+
+// connect to kovan using infura & the library's default private key
+const config = ConfigFactory.create("kovan");
+// ~ instantiate ~
 const maker = new Maker(config);
 
-const FINNEY = "1000000000000000";
 const LIQUIDATION_RATIO = 1.5;
-
 const leveragedCDPS = [];
 
-const createLeveragedCDP = async ({ layers, priceFloor, principal }) => {
-  console.log(`
-creating a leveraged cdp with the following parameters:
-layers: ${layers}
-priceFloor: ${priceFloor}
-principal: ${principal}
-  `);
+const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
+  invariant(
+    iterations !== undefined &&
+      priceFloor !== undefined &&
+      principal !== undefined,
+    `Not all parameters (iterations, priceFloor, principal) were recieved`
+  );
+
+  log.title(`Creating a leveraged cdp with the following parameters:`);
+  log.title(`Iterations: ${iterations}`);
+  log.title(`Price Floor: $${priceFloor}`);
+  log.title(`Principal: ${principal} ETH`);
+
+  // get the current eth price (according to Maker's price oracle) from the "priceFeed" service
+  const priceETH = await maker.service("priceFeed").getEthPrice();
+  log.state(`Current price of ETH: ${priceETH}`);
+
+  invariant(
+    priceETH > priceFloor,
+    `Price floor must be below the current oracle price`
+  );
 
   const cdp = await maker.openCdp();
   const id = await cdp.getCdpId();
+  log.action(`opened cdp ${id}`);
 
-  const priceETH = await maker.service("priceFeed").getEthPrice();
-  console.log(`current price of ETH: ${priceETH}`);
-
-  assert(priceETH >= priceFloor);
-
+  // calculate a collateralization ratio that will achieve the given price floor
   const collatRatio = priceETH * LIQUIDATION_RATIO / priceFloor;
 
+  // lock up all of our principal
   await cdp.lockEth(principal);
-  console.log(`locked ${principal} ETH`);
+  log.action(`locked ${principal} ETH`);
 
-  const drawAmt = Math.floor(principal * priceETH / collatRatio);
+  // calculate how much dai to draw in order to achieve the collateralization ratio ^
+  let drawAmt = Math.floor(principal * priceETH / collatRatio);
   await cdp.drawDai(drawAmt.toString());
-  console.log(`drew ${drawAmt} Dai`);
+  log.action(`drew ${drawAmt} Dai`);
 
-  const defaultAccount = maker
-    .service("token")
-    .get("web3")
-    .defaultAccount();
-  const dai = maker.service("token").getToken("DAI");
+  // grab our weth token object from the "token service"
   const weth = maker.service("token").getToken("WETH");
 
-  const balanceDai = await dai.balanceOf(defaultAccount);
-  const balanceWeth = await weth.balanceOf(defaultAccount);
-  console.log(
-    `Account dai balance: ${balanceDai} Account WETH balance: ${balanceWeth}`
-  );
+  // do `iterations` round trip(s) to the exchange
+  for (let i = 0; i < iterations; i++) {
+    // exchange drawn dai for W-ETH
+    let tx = await maker
+      .service("exchange")
+      .sellDai(drawAmt.toString(), "WETH");
 
-  /*
+    // observe the amount recieved from the exchange by calling `fillAmount` on the returned transaction object
+    let returnedETH = tx.fillAmount().toString();
+    log.action(`exchanged ${drawAmt} Dai for ${returnedETH} W-ETH`);
 
-      const wethAddress = weth.address();
-      const daiAddress = dai.address();
+    // unwrap the eth
+    await weth.withdraw(returnedETH);
+    log.action(`unwrapped ${returnedETH} W-ETH`);
 
-      await maker.service("exchange").offer(
-        1000000000000000000,
-        wethAddress,
-        400000000000000000000,
-        daiAddress
-      );
+    // lock all of the eth that we just recieved into our cdp
+    await cdp.lockEth(returnedETH);
+    log.action(`locked ${returnedETH} ETH`);
 
-      await maker.service("exchange").sellDai("0.1", "WETH");
+    // calculate how much dai we need to draw in order to re-attain our desired collat ratio
+    drawAmt = Math.floor(returnedETH * priceETH / collatRatio);
+    await cdp.drawDai(drawAmt.toString());
+    log.action(`drew ${drawAmt} Dai`);
+  }
 
-      for (let i = 0; i < layers - 1; i++) {
-        await maker.service("exchange").sellDai("0.1", "WETH");
-        let wethAmount = marketBuy(weth, dai, daiAmount);
-        await maker.service("conversionService").convertWethToPeth(
-          wethAmount.toString()
-        );
-        await cdp.lockEth(wethAmount.toString());
-        let draw = Math.floor(wethAmount * priceETH / collatRatio);
-        await cdp.drawDai(draw.toString());
-      }
-  */
+  // get the final state of our cdp
+  const collateral = await cdp.getCollateralAmount();
+  const debt = await cdp.getDebtAmount();
 
-  const info = await cdp.getInfo();
-  const collateral = info.ink.div(FINNEY).toNumber() / 1000;
-  const debt = info.art.div(FINNEY).toNumber() / 1000;
-  const owner = info.lad;
-
-  leveragedCDPS.push({
+  const cdpState = {
     collateral,
     debt,
-    owner,
     id,
     principal,
-    layers,
-    priceFloor
-  });
+    iterations,
+    priceFloor,
+    finalDai: drawAmt
+  };
+
+  log.state(`Created CDP: ${JSON.stringify(cdpState)}`);
+  leveragedCDPS.push(cdpState);
 };
 
 http
   .createServer(async (req, res) => {
     res.writeHead(200, { "Content-Type": "application/json " });
     const query = url.parse(req.url, true).query;
-    assert(
-      query.layers !== undefined &&
-        query.priceFloor !== undefined &&
-        query.principal !== undefined
-    );
-    await createLeveragedCDP(query);
-    res.end(JSON.stringify(leveragedCDPS));
+    try {
+      await createLeveragedCDP(query);
+      res.end(JSON.stringify(leveragedCDPS));
+    } catch (error) {
+      console.log(error);
+      res.statusCode = 400;
+      res.end(`Problem creating leveraged cdp: ${error}`);
+    }
   })
   .listen(1337, "127.0.0.1");
 
-console.log(`server running on port 1337`);
+log.state(`server running on port 1337`);
