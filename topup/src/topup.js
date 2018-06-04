@@ -11,7 +11,7 @@ module.exports = async function(cdpId, options) {
   const targetRatio = Number(options.targetRatio)
   if (isNaN(targetRatio)) throw new Error('Invalid value for targetRatio')
 
-  const config = ConfigFactory.create('decentralized-oasis-without-proxies')
+  const config = ConfigFactory.create('kovan')
   config.services.log = 'NullLogger'
   const maker = new Maker(config)
   const cdp = await maker.getCdp(cdpId)
