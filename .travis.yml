@@ -6,9 +6,9 @@ cache:
   - node_modules
 script:
   - cd react-example
-  - npm build
+  - yarn install
   - cd ../topup
-  - npm build
+  - yarn install
   - cd ../leverage
   - npm build
 
