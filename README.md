@@ -22,7 +22,7 @@ Interact with Maker.js in the browser
 
 ### topup
 
-Prevent your CDP from getting liquidated (automated risk management)
+Prevent your CDP from getting liquidated (automated risk management) -- "top it up" with collateral to stay above a target collateralization ratio.
 
 __Example usage__
 ```shell
