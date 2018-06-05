@@ -6,6 +6,16 @@
 
 Lock ETH -> Draw DAI -> Exchange Dai for ETH -> repeat
 
+__Example usage__
+```shell
+export KOVAN_PRIVATE_KEY=0xabc... # your key goes here
+cd leverage
+npm start # starts a web server
+
+# in a new terminal:
+curl "localhost:1337?iterations=3&priceFloor=600&principal=0.1"
+```
+
 ### react-example
 
 Interact with Maker.js in the browser
@@ -15,7 +25,7 @@ Interact with Maker.js in the browser
 Prevent your CDP from getting liquidated (automated risk management)
 
 __Example usage__
-```js
+```shell
 export KOVAN_PRIVATE_KEY=0xabc... # your key goes here
 cd topup
 node . 1234 -t 2.5 -v

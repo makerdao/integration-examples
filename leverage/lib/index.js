@@ -2,10 +2,7 @@ const http = require("http");
 var url = require("url");
 const invariant = require("invariant");
 
-const {
-  Maker,
-  ConfigFactory
-} = require("@makerdao/makerdao-exchange-integration");
+const Maker = require("@makerdao/makerdao-exchange-integration");
 
 // descriptive logging
 const debug = require("debug");
@@ -15,10 +12,8 @@ const log = {
   title: debug("leverage:header")
 };
 
-// connect to kovan using infura & the library's default private key
-const config = ConfigFactory.create("kovan");
-// ~ instantiate ~
-const maker = new Maker(config);
+// connect to kovan using infura
+const maker = new Maker('kovan', {privateKey: process.env.KOVAN_PRIVATE_KEY});
 
 const LIQUIDATION_RATIO = 1.5;
 const leveragedCDPS = [];
