@@ -6,11 +6,13 @@ cache:
   - node_modules
 script:
   - cd react-example
-  - yarn install
+  - npm install
+  - npm run build
   - cd ../topup
-  - yarn install
+  - npm install
   - cd ../leverage
-  - npm build
+  - npm install
+  - npm run build
 
 deploy:
   provider: pages
