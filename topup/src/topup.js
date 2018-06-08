@@ -1,7 +1,4 @@
-const {
-  ConfigFactory,
-  Maker
-} = require('@makerdao/makerdao-exchange-integration')
+const Maker = require('@makerdao/makerdao-exchange-integration')
 const roundTo = require('round-to')
 
 const MIN_ADD_AMOUNT = 0.0001
@@ -11,9 +8,10 @@ module.exports = async function(cdpId, options) {
   const targetRatio = Number(options.targetRatio)
   if (isNaN(targetRatio)) throw new Error('Invalid value for targetRatio')
 
-  const config = ConfigFactory.create('kovan')
-  config.services.log = 'NullLogger'
-  const maker = new Maker(config)
+  const maker = new Maker('kovan', {
+    privateKey: process.env.KOVAN_PRIVATE_KEY,
+    log: false
+  })
   const cdp = await maker.getCdp(cdpId)
 
   const collateral = await cdp.getCollateralAmount()
