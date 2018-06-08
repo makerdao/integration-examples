@@ -14,7 +14,7 @@ module.exports = async function(cdpId, options) {
   })
   const cdp = await maker.getCdp(cdpId)
 
-  const collateral = await cdp.getCollateralAmount()
+  const collateral = await cdp.getCollateralAmountInPeth()
   console.log(`collateral: ${collateral} ETH`)
 
   const debt = await cdp.getDebtAmount()

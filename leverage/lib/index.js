@@ -85,7 +85,7 @@ const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
   }
 
   // get the final state of our cdp
-  const collateral = await cdp.getCollateralAmount();
+  const collateral = await cdp.getCollateralAmountInPeth();
   const debt = await cdp.getDebtAmount();
 
   const cdpState = {
