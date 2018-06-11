@@ -13,9 +13,8 @@ const log = {
 };
 
 // connect to kovan using infura
-const maker = new Maker('kovan', {privateKey: process.env.KOVAN_PRIVATE_KEY});
+const maker = new Maker("kovan", { privateKey: process.env.KOVAN_PRIVATE_KEY });
 
-const LIQUIDATION_RATIO = 1.5;
 const leveragedCDPS = [];
 
 const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
@@ -31,12 +30,15 @@ const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
   log.title(`Price Floor: $${priceFloor}`);
   log.title(`Principal: ${principal} ETH`);
 
+  const liquidationRatio = await maker.service("cdp").getLiquidationRatio();
+  console.log(liquidationRatio);
+  return;
   // get the current eth price (according to Maker's price oracle) from the "priceFeed" service
-  const priceETH = await maker.service("priceFeed").getEthPrice();
-  log.state(`Current price of ETH: ${priceETH}`);
+  const priceEth = await maker.service("priceFeed").getEthPrice();
+  log.state(`Current price of ETH: ${priceEth}`);
 
   invariant(
-    priceETH > priceFloor,
+    priceEth > priceFloor,
     `Price floor must be below the current oracle price`
   );
 
@@ -45,19 +47,16 @@ const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
   log.action(`opened cdp ${id}`);
 
   // calculate a collateralization ratio that will achieve the given price floor
-  const collatRatio = priceETH * LIQUIDATION_RATIO / priceFloor;
+  const collatRatio = (priceEth * liquidationRatio) / priceFloor;
 
   // lock up all of our principal
   await cdp.lockEth(principal);
   log.action(`locked ${principal} ETH`);
 
   // calculate how much dai to draw in order to achieve the collateralization ratio ^
-  let drawAmt = Math.floor(principal * priceETH / collatRatio);
+  let drawAmt = Math.floor((principal * priceEth) / collatRatio);
   await cdp.drawDai(drawAmt.toString());
   log.action(`drew ${drawAmt} Dai`);
-
-  // grab our weth token object from the "token service"
-  const weth = maker.service("token").getToken("WETH");
 
   // do `iterations` round trip(s) to the exchange
   for (let i = 0; i < iterations; i++) {
@@ -67,19 +66,15 @@ const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
       .sellDai(drawAmt.toString(), "WETH");
 
     // observe the amount recieved from the exchange by calling `fillAmount` on the returned transaction object
-    let returnedETH = tx.fillAmount().toString();
-    log.action(`exchanged ${drawAmt} Dai for ${returnedETH} W-ETH`);
-
-    // unwrap the eth
-    await weth.withdraw(returnedETH);
-    log.action(`unwrapped ${returnedETH} W-ETH`);
+    let returnedWeth = tx.fillAmount().toString();
+    log.action(`exchanged ${drawAmt} Dai for ${returnedWeth} W-ETH`);
 
     // lock all of the eth that we just recieved into our cdp
-    await cdp.lockEth(returnedETH);
-    log.action(`locked ${returnedETH} ETH`);
+    await cdp.lockWeth(returnedWeth);
+    log.action(`locked ${returnedWeth} ETH`);
 
     // calculate how much dai we need to draw in order to re-attain our desired collat ratio
-    drawAmt = Math.floor(returnedETH * priceETH / collatRatio);
+    drawAmt = Math.floor((returnedWeth * priceEth) / collatRatio);
     await cdp.drawDai(drawAmt.toString());
     log.action(`drew ${drawAmt} Dai`);
   }
