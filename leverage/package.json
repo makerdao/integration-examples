@@ -20,6 +20,7 @@
     "nodemon": "^1.10.0"
   },
   "dependencies": {
+    "@makerdao/makerdao-exchange-integration": "0.0.57",
     "debug": "^3.1.0",
     "invariant": "^2.2.4"
   }

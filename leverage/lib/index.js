@@ -2,10 +2,7 @@ const http = require("http");
 var url = require("url");
 const invariant = require("invariant");
 
-const {
-  Maker,
-  ConfigFactory
-} = require("@makerdao/makerdao-exchange-integration");
+const Maker = require("@makerdao/makerdao-exchange-integration");
 
 // descriptive logging
 const debug = require("debug");
@@ -15,12 +12,9 @@ const log = {
   title: debug("leverage:header")
 };
 
-// connect to kovan using infura & the library's default private key
-const config = ConfigFactory.create("kovan");
-// ~ instantiate ~
-const maker = new Maker(config);
+// connect to kovan using infura
+const maker = new Maker("kovan", { privateKey: process.env.KOVAN_PRIVATE_KEY });
 
-const LIQUIDATION_RATIO = 1.5;
 const leveragedCDPS = [];
 
 const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
@@ -36,12 +30,16 @@ const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
   log.title(`Price Floor: $${priceFloor}`);
   log.title(`Principal: ${principal} ETH`);
 
+  // get the liquidation ratio from the "cdp" service
+  const liquidationRatio = await maker.service("cdp").getLiquidationRatio();
+  log.state(`Liquidation ratio: ${liquidationRatio}`);
+
   // get the current eth price (according to Maker's price oracle) from the "priceFeed" service
-  const priceETH = await maker.service("priceFeed").getEthPrice();
-  log.state(`Current price of ETH: ${priceETH}`);
+  const priceEth = await maker.service("priceFeed").getEthPrice();
+  log.state(`Current price of ETH: ${priceEth}`);
 
   invariant(
-    priceETH > priceFloor,
+    priceEth > priceFloor,
     `Price floor must be below the current oracle price`
   );
 
@@ -50,51 +48,47 @@ const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
   log.action(`opened cdp ${id}`);
 
   // calculate a collateralization ratio that will achieve the given price floor
-  const collatRatio = priceETH * LIQUIDATION_RATIO / priceFloor;
+  const collatRatio = (priceEth * liquidationRatio) / priceFloor;
 
   // lock up all of our principal
   await cdp.lockEth(principal);
   log.action(`locked ${principal} ETH`);
 
-  // calculate how much dai to draw in order to achieve the collateralization ratio ^
-  let drawAmt = Math.floor(principal * priceETH / collatRatio);
+  // calculate how much Dai we need to draw in order
+  // to achieve the desired collateralization ratio
+  let drawAmt = Math.floor((principal * priceEth) / collatRatio);
   await cdp.drawDai(drawAmt.toString());
   log.action(`drew ${drawAmt} Dai`);
 
-  // grab our weth token object from the "token service"
-  const weth = maker.service("token").getToken("WETH");
-
   // do `iterations` round trip(s) to the exchange
   for (let i = 0; i < iterations; i++) {
-    // exchange drawn dai for W-ETH
+    // exchange the drawn Dai for W-ETH
     let tx = await maker
       .service("exchange")
       .sellDai(drawAmt.toString(), "WETH");
 
-    // observe the amount recieved from the exchange by calling `fillAmount` on the returned transaction object
-    let returnedETH = tx.fillAmount().toString();
-    log.action(`exchanged ${drawAmt} Dai for ${returnedETH} W-ETH`);
+    // observe the amount of W-ETH recieved from the exchange
+    // by calling `fillAmount` on the returned transaction object
+    let returnedWeth = tx.fillAmount().toString();
+    log.action(`exchanged ${drawAmt} Dai for ${returnedWeth} W-ETH`);
 
-    // unwrap the eth
-    await weth.withdraw(returnedETH);
-    log.action(`unwrapped ${returnedETH} W-ETH`);
+    // lock all of the W-ETH we just recieved into our CDP
+    await cdp.lockWeth(returnedWeth);
+    log.action(`locked ${returnedWeth} ETH`);
 
-    // lock all of the eth that we just recieved into our cdp
-    await cdp.lockEth(returnedETH);
-    log.action(`locked ${returnedETH} ETH`);
-
-    // calculate how much dai we need to draw in order to re-attain our desired collat ratio
-    drawAmt = Math.floor(returnedETH * priceETH / collatRatio);
+    // calculate how much Dai we need to draw in order to
+    // re-attain our desired collateralization ratio
+    drawAmt = Math.floor((returnedWeth * priceEth) / collatRatio);
     await cdp.drawDai(drawAmt.toString());
     log.action(`drew ${drawAmt} Dai`);
   }
 
-  // get the final state of our cdp
-  const collateral = await cdp.getCollateralAmount();
+  // get the final state of our CDP
+  const pethCollateral = await cdp.getCollateralAmountInPeth();
   const debt = await cdp.getDebtAmount();
 
   const cdpState = {
-    collateral,
+    pethCollateral,
     debt,
     id,
     principal,
