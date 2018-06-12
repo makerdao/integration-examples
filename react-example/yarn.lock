@@ -179,17 +179,23 @@
   dependencies:
     events "^2.0.0"
 
-"@makerdao/makerdao-exchange-integration@file:../../integration/dist":
-  version "0.0.43"
+"@makerdao/makerdao-exchange-integration@0.0.55":
+  version "0.0.55"
+  resolved "https://registry.yarnpkg.com/@makerdao/makerdao-exchange-integration/-/makerdao-exchange-integration-0.0.55.tgz#4d5b986a0e9f987b76bce30f4adc19524e325ccd"
   dependencies:
     "0x.js" "^0.37.2"
     "@0xproject/connect" "^0.6.12"
     "@0xproject/subproviders" "^0.10.1"
+    babel-polyfill "^6.26.0"
     bignumber.js "^5.0.0"
     bunyan "^1.8.12"
     ethereumjs-util "^5.2.0"
     ethers "^3.0.15"
     ethers-web3-bridge "0.0.1"
+    lodash.merge "^4.6.1"
+    lodash.uniq "^4.5.0"
+    lodash.values "^4.3.0"
+    toposort "^2.0.2"
     web3 "^0.20.6"
     web3-provider-engine "14.0.4"
 
@@ -1128,6 +1134,14 @@ babel-plugin-transform-strict-mode@^6.24.1:
   dependencies:
     babel-runtime "^6.22.0"
     babel-types "^6.24.1"
+
+babel-polyfill@^6.26.0:
+  version "6.26.0"
+  resolved "https://registry.yarnpkg.com/babel-polyfill/-/babel-polyfill-6.26.0.tgz#379937abc67d7895970adc621f284cd966cf2153"
+  dependencies:
+    babel-runtime "^6.26.0"
+    core-js "^2.5.0"
+    regenerator-runtime "^0.10.5"
 
 babel-preset-env@1.6.1:
   version "1.6.1"
@@ -5669,6 +5683,10 @@ lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
 
+lodash.merge@^4.6.1:
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.1.tgz#adc25d9cb99b9391c59624f379fbba60d7111d54"
+
 lodash.template@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/lodash.template/-/lodash.template-4.4.0.tgz#e73a0385c8355591746e020b99679c690e68fba0"
@@ -7456,6 +7474,10 @@ regenerate@^1.2.1:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/regenerate/-/regenerate-1.4.0.tgz#4a856ec4b56e4077c557589cae85e7a4c8869a11"
 
+regenerator-runtime@^0.10.5:
+  version "0.10.5"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.10.5.tgz#336c3efc1220adcedda2c9fab67b5a7955a33658"
+
 regenerator-runtime@^0.11.0:
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
@@ -8624,6 +8646,10 @@ to-regex@^3.0.1, to-regex@^3.0.2:
 toposort@^1.0.0:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/toposort/-/toposort-1.0.7.tgz#2e68442d9f64ec720b8cc89e6443ac6caa950029"
+
+toposort@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/toposort/-/toposort-2.0.2.tgz#ae21768175d1559d48bef35420b2f4962f09c330"
 
 tough-cookie@^2.3.2, tough-cookie@~2.3.3:
   version "2.3.4"
