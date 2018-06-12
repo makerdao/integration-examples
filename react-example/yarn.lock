@@ -179,7 +179,7 @@
   dependencies:
     events "^2.0.0"
 
-"@makerdao/makerdao-exchange-integration@0.0.55":
+"@makerdao/makerdao-exchange-integration@latest":
   version "0.0.55"
   resolved "https://registry.yarnpkg.com/@makerdao/makerdao-exchange-integration/-/makerdao-exchange-integration-0.0.55.tgz#4d5b986a0e9f987b76bce30f4adc19524e325ccd"
   dependencies:

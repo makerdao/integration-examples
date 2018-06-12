@@ -13,7 +13,6 @@ const log = {
 };
 
 // connect to kovan using infura
-console.log(process.env.KOVAN_PRIVATE_KEY);
 const maker = new Maker("kovan", { privateKey: process.env.KOVAN_PRIVATE_KEY });
 
 const leveragedCDPS = [];
