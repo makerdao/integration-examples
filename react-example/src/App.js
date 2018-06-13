@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-
-import { ConfigFactory, Maker } from '@makerdao/makerdao-exchange-integration';
+import Maker from '@makerdao/makerdao-exchange-integration';
 
 class App extends Component {
   constructor(props) {
@@ -17,9 +16,7 @@ class App extends Component {
 
   async componentDidMount() {
     // Use ConfigFactory and 'kovan' preset to initialize a maker object:
-    const config = ConfigFactory.create('kovan');
-    config.services.web3[1].usePresetProvider = false;
-    const maker = await new Maker(config);
+    const maker = await new Maker('kovan', { privateKey: process.env.KOVAN_PRIVATE_KEY });
 
     this.setState({ maker: maker });
     console.log('Maker object:', maker);
