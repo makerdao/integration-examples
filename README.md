@@ -18,7 +18,13 @@ curl "localhost:1337?iterations=3&priceFloor=600&principal=0.1"
 
 ### react-example
 
-Interact with Maker.js in the browser
+Interact with Maker.js in the browser.
+
+To set your private key:
+* `cd react-example`
+* `cp .env.example .env`
+* Add your key (as a string) where prompted in `.env`
+
 
 ### topup
 
