@@ -47,7 +47,7 @@ const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
   const id = await cdp.getCdpId();
   log.action(`opened cdp ${id}`);
 
-  // calculate a collateralization ratio that will achieve the given price floor
+  // calculate a ization ratio that will achieve the given price floor
   const collatRatio = (priceEth * liquidationRatio) / priceFloor;
 
   // lock up all of our principal
@@ -84,8 +84,8 @@ const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
   }
 
   // get the final state of our CDP
-  const pethCollateral = await cdp.getCollateralAmountInPeth();
-  const debt = await cdp.getDebtAmount();
+  const pethCollateral = await cdp.getCollateralValueInPeth();
+  const debt = await cdp.getDebtAmountInDai();
 
   const cdpState = {
     pethCollateral,
