@@ -35,7 +35,7 @@ const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
   log.state(`Liquidation ratio: ${liquidationRatio}`);
 
   // get the current eth price (according to Maker's price oracle) from the "priceFeed" service
-  const priceEth = await maker.service("priceFeed").getEthPrice();
+  const priceEth = await maker.service("price").getEthPrice();
   log.state(`Current price of ETH: ${priceEth}`);
 
   invariant(
