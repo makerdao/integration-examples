@@ -5,7 +5,8 @@
   "private": true,
   "main": "lib/index.js",
   "scripts": {
-    "start": "DEBUG=leverage:* nodemon lib/index.js --exec babel-node --presets es2015,stage-2",
+    "start-linked": "DEBUG=leverage:* nodemon lib/index.js --exec babel-node --presets es2015,stage-2",
+    "start": "DEBUG=leverage:* nodemon lib/index.js",
     "build": "babel lib -d dist",
     "serve": "node dist/index.js",
     "test": "mocha --compilers js:babel-register"
