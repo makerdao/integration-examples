@@ -41,4 +41,12 @@ module.exports = async function(cdpId, options) {
   }
 
   // optional: remove collateral if it's too high
+  
+  return [
+    targetRatio,
+    collateral,
+    debt,
+    collateralPrice,
+    ratio
+  ];
 }
