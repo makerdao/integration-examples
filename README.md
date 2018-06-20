@@ -13,7 +13,7 @@ cd leverage
 npm start # starts a web server
 
 # in a new terminal:
-curl "localhost:1337?iterations=3&priceFloor=600&principal=0.1"
+curl "localhost:1337?iterations=3&priceFloor=400&principal=0.1"
 ```
 
 ### react-example
