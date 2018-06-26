@@ -15,9 +15,8 @@ const log = {
 // connect to kovan using infura
 const maker = new Maker("kovan", { privateKey: process.env.KOVAN_PRIVATE_KEY });
 
-const leveragedCDPS = [];
-
 module.exports = async ( iterations, priceFloor, principal ) => {
+
   invariant(
     iterations !== undefined &&
       priceFloor !== undefined &&
@@ -37,13 +36,14 @@ module.exports = async ( iterations, priceFloor, principal ) => {
 
   await maker.authenticate();
 
-  // get the liquidation ratio from the "cdp" service
-  const liquidationRatio = await maker.service("cdp").getLiquidationRatio();
+  const [liquidationRatio, priceEth] = await Promise.all([
+    maker.service("cdp").getLiquidationRatio(),
+    maker.service("price").getEthPrice()
+  ]);
+
   log.state(`Liquidation ratio: ${liquidationRatio}`);
   console.log(`Liquidation ratio: ${liquidationRatio}`);
 
-  // get the current eth price (according to Maker's price oracle) from the "priceFeed" service
-  const priceEth = await maker.service("price").getEthPrice();
   log.state(`Current price of ETH: ${priceEth}`);
   console.log(`Current price of ETH: ${priceEth}`);
 
@@ -64,6 +64,10 @@ module.exports = async ( iterations, priceFloor, principal ) => {
   await cdp.lockEth(principal.toString());
   log.action(`locked ${principal} ETH`);
   console.log(`locked ${principal} ETH`);
+
+  //get initial peth collateral
+  const initialPethCollateral = await cdp.getCollateralValueInPeth();
+  console.log(` ${principal} ETH worth ${initialPethCollateral} PETH`);
 
   // calculate how much Dai we need to draw in order
   // to achieve the desired collateralization ratio
@@ -99,10 +103,13 @@ module.exports = async ( iterations, priceFloor, principal ) => {
   }
 
   // get the final state of our CDP
-  const pethCollateral = await cdp.getCollateralValueInPeth();
-  const debt = await cdp.getDebtValueInDai();
+  const [pethCollateral, debt] = await Promise.all([
+    cdp.getCollateralValueInPeth(),
+    cdp.getDebtValueInDai()
+  ]);
 
   const cdpState = {
+    initialPethCollateral,
     pethCollateral,
     debt,
     id,
@@ -114,5 +121,6 @@ module.exports = async ( iterations, priceFloor, principal ) => {
 
   log.state(`Created CDP: ${JSON.stringify(cdpState)}`);
   console.log(`Created CDP: ${JSON.stringify(cdpState)}`);
-  leveragedCDPS.push(cdpState);
+  
+  return cdpState;
 };
