@@ -17,7 +17,7 @@ const maker = new Maker("kovan", { privateKey: process.env.KOVAN_PRIVATE_KEY });
 
 const leveragedCDPS = [];
 
-const createLeveragedCDP = async ( iterations, priceFloor, principal ) => {
+module.exports = async ( iterations, priceFloor, principal ) => {
   invariant(
     iterations !== undefined &&
       priceFloor !== undefined &&
@@ -60,9 +60,7 @@ const createLeveragedCDP = async ( iterations, priceFloor, principal ) => {
   // calculate a collateralization ratio that will achieve the given price floor
   const collatRatio = (priceEth * liquidationRatio) / priceFloor;
 
-  console.log('collatRatio', collatRatio);
   // lock up all of our principal
-  console.log('principal', principal);
   await cdp.lockEth(principal.toString());
   log.action(`locked ${principal} ETH`);
   console.log(`locked ${principal} ETH`);
@@ -118,24 +116,3 @@ const createLeveragedCDP = async ( iterations, priceFloor, principal ) => {
   console.log(`Created CDP: ${JSON.stringify(cdpState)}`);
   leveragedCDPS.push(cdpState);
 };
-
-//setTimeout(()=>{createLeveragedCDP(1, 400, 0.1);}, 3000);
-createLeveragedCDP(1, 400, 0.1);
-
-/*
-http
-  .createServer(async (req, res) => {
-    res.writeHead(200, { "Content-Type": "application/json " });
-    const query = url.parse(req.url, true).query;
-    try {
-      await createLeveragedCDP(query);
-      res.end(JSON.stringify(leveragedCDPS));
-    } catch (error) {
-      console.log(error);
-      res.statusCode = 400;
-      res.end(`Problem creating leveraged cdp: ${error}`);
-    }
-  })
-  .listen(1338, "127.0.0.1");
-
-log.state(`server running on port 1338`);*/
