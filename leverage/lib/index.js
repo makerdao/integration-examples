@@ -17,7 +17,7 @@ const maker = new Maker("kovan", { privateKey: process.env.KOVAN_PRIVATE_KEY });
 
 const leveragedCDPS = [];
 
-const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
+const createLeveragedCDP = async ( iterations, priceFloor, principal ) => {
   invariant(
     iterations !== undefined &&
       priceFloor !== undefined &&
@@ -30,13 +30,22 @@ const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
   log.title(`Price Floor: $${priceFloor}`);
   log.title(`Principal: ${principal} ETH`);
 
+  console.log(`Creating a leveraged cdp with the following parameters:`);
+  console.log(`Iterations: ${iterations}`);
+  console.log(`Price Floor: $${priceFloor}`);
+  console.log(`Principal: ${principal} ETH`);
+
+  await maker.authenticate();
+
   // get the liquidation ratio from the "cdp" service
   const liquidationRatio = await maker.service("cdp").getLiquidationRatio();
   log.state(`Liquidation ratio: ${liquidationRatio}`);
+  console.log(`Liquidation ratio: ${liquidationRatio}`);
 
   // get the current eth price (according to Maker's price oracle) from the "priceFeed" service
   const priceEth = await maker.service("price").getEthPrice();
   log.state(`Current price of ETH: ${priceEth}`);
+  console.log(`Current price of ETH: ${priceEth}`);
 
   invariant(
     priceEth > priceFloor,
@@ -46,19 +55,24 @@ const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
   const cdp = await maker.openCdp();
   const id = await cdp.getCdpId();
   log.action(`opened cdp ${id}`);
+  console.log(`opened cdp ${id}`);
 
-  // calculate a ization ratio that will achieve the given price floor
+  // calculate a collateralization ratio that will achieve the given price floor
   const collatRatio = (priceEth * liquidationRatio) / priceFloor;
 
+  console.log('collatRatio', collatRatio);
   // lock up all of our principal
-  await cdp.lockEth(principal);
+  console.log('principal', principal);
+  await cdp.lockEth(principal.toString());
   log.action(`locked ${principal} ETH`);
+  console.log(`locked ${principal} ETH`);
 
   // calculate how much Dai we need to draw in order
   // to achieve the desired collateralization ratio
   let drawAmt = Math.floor((principal * priceEth) / collatRatio);
   await cdp.drawDai(drawAmt.toString());
   log.action(`drew ${drawAmt} Dai`);
+  console.log(`drew ${drawAmt} Dai`);
 
   // do `iterations` round trip(s) to the exchange
   for (let i = 0; i < iterations; i++) {
@@ -71,16 +85,19 @@ const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
     // by calling `fillAmount` on the returned transaction object
     let returnedWeth = tx.fillAmount().toString();
     log.action(`exchanged ${drawAmt} Dai for ${returnedWeth} W-ETH`);
+    console.log(`exchanged ${drawAmt} Dai for ${returnedWeth} W-ETH`);
 
     // lock all of the W-ETH we just recieved into our CDP
     await cdp.lockWeth(returnedWeth);
     log.action(`locked ${returnedWeth} ETH`);
+    console.log(`locked ${returnedWeth} ETH`);
 
     // calculate how much Dai we need to draw in order to
     // re-attain our desired collateralization ratio
     drawAmt = Math.floor((returnedWeth * priceEth) / collatRatio);
     await cdp.drawDai(drawAmt.toString());
     log.action(`drew ${drawAmt} Dai`);
+    console.log(`drew ${drawAmt} Dai`);
   }
 
   // get the final state of our CDP
@@ -98,9 +115,14 @@ const createLeveragedCDP = async ({ iterations, priceFloor, principal }) => {
   };
 
   log.state(`Created CDP: ${JSON.stringify(cdpState)}`);
+  console.log(`Created CDP: ${JSON.stringify(cdpState)}`);
   leveragedCDPS.push(cdpState);
 };
 
+//setTimeout(()=>{createLeveragedCDP(1, 400, 0.1);}, 3000);
+createLeveragedCDP(1, 400, 0.1);
+
+/*
 http
   .createServer(async (req, res) => {
     res.writeHead(200, { "Content-Type": "application/json " });
@@ -114,6 +136,6 @@ http
       res.end(`Problem creating leveraged cdp: ${error}`);
     }
   })
-  .listen(1337, "127.0.0.1");
+  .listen(1338, "127.0.0.1");
 
-log.state(`server running on port 1337`);
+log.state(`server running on port 1338`);*/
