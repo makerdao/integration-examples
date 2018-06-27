@@ -10,11 +10,11 @@ __Example usage__
 ```shell
 export KOVAN_PRIVATE_KEY=0xabc... # your key goes here
 cd leverage
-npm start # starts a web server
-
-# in a new terminal:
-curl "localhost:1337?iterations=3&priceFloor=400&principal=0.1"
+node . 1 400 0.1
 ```
+* The first argument is the number of iterations
+* The second argument is the ETH price floor
+* The third argument is the initial amount of ETH
 
 ### react-example
 

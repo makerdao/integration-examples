@@ -1,4 +1,4 @@
-const leverage = require('../lib/index');
+const leverage = require('../lib/leverage');
  
 test("leveraged cdp should end up with more eth than it started with", async () => {
 	const cdpState = await leverage(1, 400, 0.1);

@@ -2,16 +2,14 @@
 Maker.js CDP Leverge Example
 </h1>
 
-If you'd like to get it running locally:
+Lock ETH -> Draw DAI -> Exchange Dai for ETH -> repeat
 
-1.  From the root project directory, run
-    `$ npm install`
-2.  Start the webserver with
-    `$ KOVAN_PRIVATE_KEY=<your_private_key> npm start`
-3.  Visit `http://localhost:1337` with the following query params:
-
-    1.  `iterations`
-    2.  `priceFloor`
-    3.  `principal`
-
-(ex: run `curl http://localhost:1337/\?iterations=1\&priceFloor=400\&principal=0.1` on your command line)
+__Example usage__
+```shell
+export KOVAN_PRIVATE_KEY=0xabc... # your key goes here
+cd leverage
+node . 1 400 0.1
+```
+* The first argument is the number of iterations
+* The second argument is the ETH price floor
+* The third argument is the initial amount of ETH
