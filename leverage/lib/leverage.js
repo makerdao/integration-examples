@@ -1,104 +1,86 @@
-const http = require("http");
-var url = require("url");
-const invariant = require("invariant");
-
-const Maker = require("@makerdao/makerdao-exchange-integration");
+const invariant = require('invariant');
+const Maker = require('@makerdao/makerdao-exchange-integration');
 
 // descriptive logging
-const debug = require("debug");
+const debug = require('debug');
 const log = {
-  state: debug("leverage:state"),
-  action: debug("leverage:action"),
-  title: debug("leverage:header")
+  state: debug('leverage:state'),
+  action: debug('leverage:action'),
+  title: debug('leverage:header')
 };
 
 // connect to kovan using infura
-const maker = new Maker("kovan", { privateKey: process.env.KOVAN_PRIVATE_KEY });
+const maker = new Maker('kovan', {
+  privateKey: process.env.KOVAN_PRIVATE_KEY,
+  log: false
+});
 
-module.exports = async ( iterations, priceFloor, principal ) => {
+module.exports = async (iterations, priceFloor, principal) => {
   invariant(
     iterations !== undefined &&
       priceFloor !== undefined &&
       principal !== undefined,
-    `Not all parameters (iterations, priceFloor, principal) were recieved`
+    'Not all parameters (iterations, priceFloor, principal) were received'
   );
 
-  log.title(`Creating a leveraged cdp with the following parameters:`);
+  log.title('Creating a leveraged cdp with the following parameters:');
   log.title(`Iterations: ${iterations}`);
   log.title(`Price Floor: $${priceFloor}`);
   log.title(`Principal: ${principal} ETH`);
 
-  console.log(`Creating a leveraged cdp with the following parameters:`);
-  console.log(`Iterations: ${iterations}`);
-  console.log(`Price Floor: $${priceFloor}`);
-  console.log(`Principal: ${principal} ETH`);
-
   await maker.authenticate();
-
-  const [liquidationRatio, priceEth] = await Promise.all([
-    maker.service("cdp").getLiquidationRatio(),
-    maker.service("price").getEthPrice()
-  ]);
+  const liquidationRatio = await maker.service('cdp').getLiquidationRatio();
+  const priceEth = (await maker.service('price').getEthPrice()).toNumber();
 
   log.state(`Liquidation ratio: ${liquidationRatio}`);
-  console.log(`Liquidation ratio: ${liquidationRatio}`);
-
   log.state(`Current price of ETH: ${priceEth}`);
-  console.log(`Current price of ETH: ${priceEth}`);
 
   invariant(
     priceEth > priceFloor,
-    `Price floor must be below the current oracle price`
+    'Price floor must be below the current oracle price'
   );
 
+  log.action('opening CDP...');
   const cdp = await maker.openCdp();
-  const id = await cdp.getCdpId();
-  log.action(`opened cdp ${id}`);
-  console.log(`opened cdp ${id}`);
+  const id = await cdp.getId();
+  log.state(`CDP ID: ${id}`);
 
   // calculate a collateralization ratio that will achieve the given price floor
-  const collatRatio = (priceEth * liquidationRatio) / priceFloor;
+  const collatRatio = priceEth * liquidationRatio / priceFloor;
 
   // lock up all of our principal
-  await cdp.lockEth(principal.toString());
+  await cdp.lockEth(principal);
   log.action(`locked ${principal} ETH`);
-  console.log(`locked ${principal} ETH`);
 
   //get initial peth collateral
   const initialPethCollateral = await cdp.getCollateralValueInPeth();
-  console.log(` ${principal} ETH worth ${initialPethCollateral} PETH`);
+  log.state(`${principal} ETH is worth ${initialPethCollateral} PETH`);
 
   // calculate how much Dai we need to draw in order
   // to achieve the desired collateralization ratio
-  let drawAmt = Math.floor((principal * priceEth) / collatRatio);
-  await cdp.drawDai(drawAmt.toString());
+  let drawAmt = Math.floor(principal * priceEth / collatRatio);
+  await cdp.drawDai(drawAmt);
   log.action(`drew ${drawAmt} Dai`);
-  console.log(`drew ${drawAmt} Dai`);
 
   // do `iterations` round trip(s) to the exchange
   for (let i = 0; i < iterations; i++) {
     // exchange the drawn Dai for W-ETH
-    let tx = await maker
-      .service("exchange")
-      .sellDai(drawAmt.toString(), "WETH");
+    let tx = await maker.service('exchange').sellDai(drawAmt, 'WETH');
 
-    // observe the amount of W-ETH recieved from the exchange
+    // observe the amount of W-ETH received from the exchange
     // by calling `fillAmount` on the returned transaction object
-    let returnedWeth = tx.fillAmount().toString();
-    log.action(`exchanged ${drawAmt} Dai for ${returnedWeth} W-ETH`);
-    console.log(`exchanged ${drawAmt} Dai for ${returnedWeth} W-ETH`);
+    let returnedWeth = tx.fillAmount();
+    log.action(`exchanged ${drawAmt} Dai for ${returnedWeth} WETH`);
 
-    // lock all of the W-ETH we just recieved into our CDP
+    // lock all of the W-ETH we just received into our CDP
     await cdp.lockWeth(returnedWeth);
     log.action(`locked ${returnedWeth} ETH`);
-    console.log(`locked ${returnedWeth} ETH`);
 
     // calculate how much Dai we need to draw in order to
     // re-attain our desired collateralization ratio
-    drawAmt = Math.floor((returnedWeth * priceEth) / collatRatio);
-    await cdp.drawDai(drawAmt.toString());
+    drawAmt = Math.floor(returnedWeth * priceEth / collatRatio);
+    await cdp.drawDai(drawAmt);
     log.action(`drew ${drawAmt} Dai`);
-    console.log(`drew ${drawAmt} Dai`);
   }
 
   // get the final state of our CDP
@@ -119,7 +101,5 @@ module.exports = async ( iterations, priceFloor, principal ) => {
   };
 
   log.state(`Created CDP: ${JSON.stringify(cdpState)}`);
-  console.log(`Created CDP: ${JSON.stringify(cdpState)}`);
-  
   return cdpState;
 };

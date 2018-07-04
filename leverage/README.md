@@ -1,5 +1,5 @@
 <h1 align="center">
-Maker.js CDP Leverge Example
+Maker.js CDP Leverage Example
 </h1>
 
 Lock ETH -> Draw DAI -> Exchange Dai for ETH -> repeat
@@ -8,6 +8,7 @@ __Example usage__
 ```shell
 export KOVAN_PRIVATE_KEY=0xabc... # your key goes here
 cd leverage
+export "DEBUG=leverage.*" # turn on console logging
 node . 1 400 0.1
 ```
 * The first argument is the number of iterations

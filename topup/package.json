@@ -6,6 +6,7 @@
     "round-to": "^3.0.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "jest": "^23.1.0"
   },
   "scripts": {

@@ -1,4 +1,3 @@
-const cli = require('../src/cli');
 const topup = require('../src/topup');
 
 test("should not throw an error when accessing maker.js", async () => {

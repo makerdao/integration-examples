@@ -20,7 +20,9 @@ module.exports = async function(cdpId, options) {
   const debt = await cdp.getDebtValueInDai()
   console.log(`debt: ${debt} DAI`)
 
-  const collateralPrice = await maker.service('price').getEthPrice()
+  const collateralPrice = (await maker
+    .service('price')
+    .getEthPrice()).toNumber()
   console.log(`ETH/USD: ${collateralPrice}`)
 
   const ratio = collateralPrice * collateral / debt
@@ -35,18 +37,12 @@ module.exports = async function(cdpId, options) {
     }
 
     console.log(`ratio is ${ratio}; adding ${addAmount} ETH.`)
-    await cdp.lockEth(addAmount.toString())
+    await cdp.lockEth(addAmount)
   } else {
     console.log(`ratio is ${ratio}; doing nothing.`)
   }
 
   // optional: remove collateral if it's too high
-  
-  return [
-    targetRatio,
-    collateral,
-    debt,
-    collateralPrice,
-    ratio
-  ];
+
+  return [targetRatio, collateral, debt, collateralPrice, ratio]
 }
