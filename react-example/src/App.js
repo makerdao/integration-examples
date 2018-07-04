@@ -34,14 +34,14 @@ class App extends Component {
     await this.shutCdp();
     return;
 }
-  
+
   async openCdp() {
     // Use the maker instance to call functions:
     const { maker } = this.state;
 
     // Use transaction events to wait for events on the blockchain:
     const cdp = await maker.openCdp();
-    const cdpId = await cdp.getCdpId();
+    const cdpId = await cdp.getId();
 
     console.log('Opened CDP:', cdp);
     console.log('Opened CDP ID:', cdpId);
@@ -65,7 +65,7 @@ class App extends Component {
   async lockEth() {
     const { cdp } = this.state;
 
-    const txn = await cdp.lockEth('0.1');
+    const txn = await cdp.lockEth(0.1);
     console.log('Transaction from locking eth:', txn);
     return;
   }
@@ -90,9 +90,9 @@ class App extends Component {
     const { cdp } = this.state;
     const defaultAccount = this.state.maker._container.service('token').get('web3').defaultAccount();
     const dai = this.state.maker._container.service('token').getToken('DAI');
-    const txn = await cdp.drawDai('1');
+    const txn = await cdp.drawDai(1);
     const balance = await dai.balanceOf(defaultAccount);
-    
+
     console.log('Transaction from drawing Dai:', txn);
     console.log('Dai balance after drawing:', balance);
     return;
@@ -102,7 +102,7 @@ class App extends Component {
     const { cdp } = this.state;
     const defaultAccount = this.state.maker._container.service('token').get('web3').defaultAccount();
     const dai = this.state.maker._container.service('token').getToken('DAI');
-    const txn = await cdp.wipeDai('1');
+    const txn = await cdp.wipeDai(1);
     const balance = await dai.balanceOf(defaultAccount);
 
     console.log('Transaction from wiping Dai:', txn);

@@ -240,20 +240,22 @@
   dependencies:
     events "^2.0.0"
 
-"@makerdao/makerdao-exchange-integration@latest":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@makerdao/makerdao-exchange-integration/-/makerdao-exchange-integration-0.1.0.tgz#4bce14e712bef6164b517a6741212da05eedde1f"
+"@makerdao/makerdao-exchange-integration@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@makerdao/makerdao-exchange-integration/-/makerdao-exchange-integration-0.2.0.tgz#aad63802853e2a5dc24adbeb0c34d357a2696e55"
   dependencies:
     "0x.js" "^0.37.2"
     "@0xproject/connect" "^0.6.12"
     "@0xproject/subproviders" "^0.10.1"
     babel-polyfill "^6.26.0"
-    bignumber.js "^5.0.0"
+    bignumber.js "^7.2.1"
     bunyan "^1.8.12"
     debug "^3.1.0"
     ethereumjs-util "^5.2.0"
     ethers "^3.0.15"
     ethers-web3-bridge "0.0.1"
+    eventemitter2 "^5.0.1"
+    lodash.isequal "^4.5.0"
     lodash.merge "^4.6.1"
     lodash.uniq "^4.5.0"
     lodash.values "^4.3.0"
@@ -1212,9 +1214,9 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
-bignumber.js@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-5.0.0.tgz#fbce63f09776b3000a83185badcde525daf34833"
+bignumber.js@^7.2.1:
+  version "7.2.1"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-7.2.1.tgz#80c048759d826800807c4bfd521e50edbba57a5f"
 
 "bignumber.js@git+https://github.com/frozeman/bignumber.js-nolookahead.git":
   version "2.0.7"
@@ -2553,6 +2555,10 @@ ethjs-util@^0.1.3:
   dependencies:
     is-hex-prefixed "1.0.0"
     strip-hex-prefix "1.0.0"
+
+eventemitter2@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-5.0.1.tgz#6197a095d5fb6b57e8942f6fd7eaad63a09c9452"
 
 eventemitter3@1.1.1:
   version "1.1.1"
@@ -4256,6 +4262,10 @@ locate-path@^2.0.0:
 lodash.assign@^4.0.3, lodash.assign@^4.0.6:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/lodash.assign/-/lodash.assign-4.2.0.tgz#0d99f3ccd7a6d261d19bdaeb9245005d285808e7"
+
+lodash.isequal@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
 
 lodash.merge@^4.6.1:
   version "4.6.1"

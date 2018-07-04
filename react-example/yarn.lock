@@ -179,19 +179,22 @@
   dependencies:
     events "^2.0.0"
 
-"@makerdao/makerdao-exchange-integration@0.0.58":
-  version "0.0.58"
-  resolved "https://registry.yarnpkg.com/@makerdao/makerdao-exchange-integration/-/makerdao-exchange-integration-0.0.58.tgz#e8691adee427a7168e7147006d807828414e3628"
+"@makerdao/makerdao-exchange-integration@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@makerdao/makerdao-exchange-integration/-/makerdao-exchange-integration-0.2.0.tgz#aad63802853e2a5dc24adbeb0c34d357a2696e55"
   dependencies:
     "0x.js" "^0.37.2"
     "@0xproject/connect" "^0.6.12"
     "@0xproject/subproviders" "^0.10.1"
     babel-polyfill "^6.26.0"
-    bignumber.js "^5.0.0"
+    bignumber.js "^7.2.1"
     bunyan "^1.8.12"
+    debug "^3.1.0"
     ethereumjs-util "^5.2.0"
     ethers "^3.0.15"
     ethers-web3-bridge "0.0.1"
+    eventemitter2 "^5.0.1"
+    lodash.isequal "^4.5.0"
     lodash.merge "^4.6.1"
     lodash.uniq "^4.5.0"
     lodash.values "^4.3.0"
@@ -1369,9 +1372,9 @@ big.js@^3.1.3:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-3.2.0.tgz#a5fc298b81b9e0dca2e458824784b65c52ba588e"
 
-bignumber.js@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-5.0.0.tgz#fbce63f09776b3000a83185badcde525daf34833"
+bignumber.js@^7.2.1:
+  version "7.2.1"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-7.2.1.tgz#80c048759d826800807c4bfd521e50edbba57a5f"
 
 "bignumber.js@git+https://github.com/frozeman/bignumber.js-nolookahead.git":
   version "2.0.7"
@@ -3457,6 +3460,10 @@ event-emitter@~0.3.5:
   dependencies:
     d "1"
     es5-ext "~0.10.14"
+
+eventemitter2@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-5.0.1.tgz#6197a095d5fb6b57e8942f6fd7eaad63a09c9452"
 
 eventemitter3@1.1.1:
   version "1.1.1"
@@ -5670,6 +5677,10 @@ lodash.isarguments@^3.0.0:
 lodash.isarray@^3.0.0:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/lodash.isarray/-/lodash.isarray-3.0.4.tgz#79e4eb88c36a8122af86f844aa9bcd851b5fbb55"
+
+lodash.isequal@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
 
 lodash.keys@^3.0.0:
   version "3.1.2"
