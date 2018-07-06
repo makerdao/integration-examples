@@ -1,4 +1,4 @@
-const minimist = require('minimist')
+const minimist = require('minimist');
 const leverage = require('./leverage');
 
 const argv = minimist(process.argv);
