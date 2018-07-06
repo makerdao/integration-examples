@@ -4,6 +4,9 @@ node_js:
 cache:
   directories:
   - node_modules
+  - react-example/node_modules
+  - topup/node_modules
+  - leverage/node_modules
 before_install:
 - npm config set //registry.npmjs.org/:_authToken=$npm_token
 script:
@@ -12,7 +15,7 @@ script:
   - npm run build
   - cd ../topup
   - npm install
+  - npm test
   - cd ../leverage
   - npm install
-  - npm run build
-
+  - npm test
