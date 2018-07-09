@@ -9,6 +9,7 @@ Lock ETH -> Draw DAI -> Exchange Dai for ETH -> repeat
 __Example usage__
 ```shell
 export KOVAN_PRIVATE_KEY=0xabc... # your key goes here
+export DEBUG=leverage.* #turn on console logging
 cd leverage
 node . 1 400 0.1
 ```
