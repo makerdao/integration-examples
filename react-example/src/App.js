@@ -94,7 +94,7 @@ class App extends Component {
     const balance = await dai.balanceOf(defaultAccount);
 
     console.log('Transaction from drawing Dai:', txn);
-    console.log('Dai balance after drawing:', balance);
+    console.log('Dai balance after drawing:', balance.toString());
     return;
   }
 
@@ -106,7 +106,7 @@ class App extends Component {
     const balance = await dai.balanceOf(defaultAccount);
 
     console.log('Transaction from wiping Dai:', txn);
-    console.log('Dai balance after wiping:', balance);
+    console.log('Dai balance after wiping:', balance.toString());
     return;
   }
 
