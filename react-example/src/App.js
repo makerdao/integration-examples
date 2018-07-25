@@ -88,8 +88,8 @@ class App extends Component {
 
   async drawDai() {
     const { cdp } = this.state;
-    const defaultAccount = this.state.maker._container.service('token').get('web3').defaultAccount();
-    const dai = this.state.maker._container.service('token').getToken('DAI');
+    const defaultAccount = this.state.maker.service('token').get('web3').defaultAccount();
+    const dai = this.state.maker.service('token').getToken('DAI');
     const txn = await cdp.drawDai(1);
     const balance = await dai.balanceOf(defaultAccount);
 
@@ -100,8 +100,8 @@ class App extends Component {
 
   async wipeDebt() {
     const { cdp } = this.state;
-    const defaultAccount = this.state.maker._container.service('token').get('web3').defaultAccount();
-    const dai = this.state.maker._container.service('token').getToken('DAI');
+    const defaultAccount = this.state.maker.service('token').get('web3').defaultAccount();
+    const dai = this.state.maker.service('token').getToken('DAI');
     const txn = await cdp.wipeDai(1);
     const balance = await dai.balanceOf(defaultAccount);
 
