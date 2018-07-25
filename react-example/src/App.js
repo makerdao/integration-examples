@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import StartButton from './StartButton.js';
 import Maker from '@makerdao/makerdao-exchange-integration';
 
 class App extends Component {
@@ -10,18 +11,11 @@ class App extends Component {
       this.state = {
         cdp: '',
         cdpId: '',
-        maker: ''
+        maker: '',
+        started: false
       }
-  }
 
-  async componentDidMount() {
-    console.log(process.env.REACT_APP_PRIVATE_KEY);
-    // Use ConfigFactory and 'kovan' preset to initialize a maker object:
-    const maker = await new Maker('kovan', { privateKey: process.env.REACT_APP_PRIVATE_KEY, overrideMetamask: true });
-
-    this.setState({ maker: maker });
-    console.log('Maker object:', maker);
-    await this.testMakerFunctionality();
+    this.handleButtonClick = this.handleButtonClick.bind(this);
   }
 
   async testMakerFunctionality() {
@@ -110,6 +104,19 @@ class App extends Component {
     return;
   }
 
+  async handleButtonClick(){
+    this.setState({started: true});
+    
+    console.log(process.env.REACT_APP_PRIVATE_KEY);
+    // Use ConfigFactory and 'kovan' preset to initialize a maker object:
+    const maker = await new Maker('kovan', { privateKey: process.env.REACT_APP_PRIVATE_KEY, overrideMetamask: true });
+
+    this.setState({ maker: maker });
+    console.log('Maker object:', maker);
+    await this.testMakerFunctionality();
+
+  }
+
   render() {
     return (
       <div className="App">
@@ -117,7 +124,8 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Maker Exchange Integration</h1>
         </header>
-          <br /><p className="App-intro"><strong>Check the console to see the following functionality:</strong></p><br />
+          <StartButton started={this.state.started} onButtonClick={this.handleButtonClick}/>
+          <br /><p className="App-intro"><strong>Click Start then check the browser console to see the following functionality:</strong></p><br />
           <p className="App-intro">Created Maker object</p>
           <p className="App-intro">Opened CDP</p>
           <p className="App-intro">Fetched CDP ID</p>
