@@ -106,7 +106,6 @@ class App extends Component {
   }
 
   async handleButtonClick(){
-    this.setState({started: true});
     
     console.log(process.env.REACT_APP_PRIVATE_KEY);
     // Use ConfigFactory and 'kovan' preset to initialize a maker object:
@@ -125,7 +124,7 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Maker Exchange Integration</h1>
         </header>
-          <StartButton started={this.state.started} onButtonClick={this.handleButtonClick}/>
+          <StartButton onButtonClick={this.handleButtonClick}/>
           <br /><p className="App-intro"><strong>Click Start then check the browser console to see the following functionality:</strong></p><br />
           <ProgressRecord/>
           <p className="App-intro">Created Maker object</p>
