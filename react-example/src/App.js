@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import StartButton from './StartButton.js';
+import ProgressRecord from './ProgressRecord.js';
 import Maker from '@makerdao/makerdao-exchange-integration';
 
 class App extends Component {
@@ -126,6 +127,7 @@ class App extends Component {
         </header>
           <StartButton started={this.state.started} onButtonClick={this.handleButtonClick}/>
           <br /><p className="App-intro"><strong>Click Start then check the browser console to see the following functionality:</strong></p><br />
+          <ProgressRecord/>
           <p className="App-intro">Created Maker object</p>
           <p className="App-intro">Opened CDP</p>
           <p className="App-intro">Fetched CDP ID</p>
