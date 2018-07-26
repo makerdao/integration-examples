@@ -1,22 +1,16 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { start } from './actions';
 
-class StartButton extends Component {
-  constructor(props) {
-    super(props);
-    this.handleClick = this.handleClick.bind(this);
-  }
+const StartButton = ({ dispatch }) => {
 
-  handleClick() {
-    this.props.onButtonClick();
-  }
-
-  render(){
-  	return (
-      <button onClick={this.handleClick}>
-        {this.props.started ? 'Restart' : 'Start'}
+  return (
+      <button onClick={()=> {
+        dispatch(start());
+      }}>
+        Start
       </button>
-  	);
-  }
+    );
 }
 
-export default StartButton;
+export default connect()(StartButton);
