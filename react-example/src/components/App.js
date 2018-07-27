@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import logo from '../logo.svg';
+import '../App.css';
 import StartButton from './StartButton.js';
 import CreateMaker from './CreateMaker.js';
 import OpenCdp from './OpenCdp.js';

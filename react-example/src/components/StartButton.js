@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { startAsync } from './actions';
+import { startAsync } from '../actions';
 
 const mapStateToProps = state => {
   return {
