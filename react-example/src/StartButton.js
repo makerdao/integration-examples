@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import { start } from './actions';
+import { startAsync } from './actions';
 
 const mapStateToProps = state => {
   return {
@@ -8,11 +8,10 @@ const mapStateToProps = state => {
   }
 }
 
-function mapDispatchToProps(dispatch, ownProps) {
+function mapDispatchToProps(dispatch) {
     return({
         onButtonClick: () => {
-        	dispatch(start());
-        	ownProps.onButtonClick();
+        	dispatch(startAsync());
         }
     })
 }

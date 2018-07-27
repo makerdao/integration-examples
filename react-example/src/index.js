@@ -3,13 +3,14 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { Provider } from 'react-redux';
 import App from './App';
+import thunkMiddleware from 'redux-thunk';
 import registerServiceWorker from './registerServiceWorker';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import rootReducer from './reducers';
 
-const store = createStore(rootReducer);
+const store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
 
-const unsubscribe = store.subscribe(() =>
+store.subscribe(() =>
   console.log(store.getState())
 );
 

@@ -1,3 +1,5 @@
+import Maker from '@makerdao/makerdao-exchange-integration';
+
 export const start = () => ({
   type: 'START'
 })
@@ -14,7 +16,7 @@ export const getCdpId = () => ({
   type: 'GET_CDP_ID'
 })
 
-export const createCdpWrapper = () => ({
+export const createCdpWrapperWithId = () => ({
   type: 'CREATE_WRAPPER'
 })
 
@@ -33,3 +35,18 @@ export const wipeDai = () => ({
 export const shutCdp = () => ({
   type: 'SHUT_CDP'
 })
+
+export const error = (error) => ({
+  type: 'ERROR',
+  error
+})
+
+export const startAsync = () => async dispatch => {
+    dispatch(start());
+    const maker = new Maker('kovan', { privateKey: process.env.REACT_APP_PRIVATE_KEY, overrideMetamask: true });
+    dispatch(createMaker());
+    const cdp = await maker.openCdp();
+    dispatch(openCdp());
+    await cdp.lockEth(0.01);
+    dispatch(lockEth());
+}
