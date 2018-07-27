@@ -4,31 +4,31 @@ const initialState = {
 
 export default function App(state = initialState, action) {
   switch (action.type) {
-    case 'START':
+    case 'STARTED':
       return {
         started: true
       }
-    case 'CREATE_MAKER':
+    case 'MAKER_CREATED':
     	return Object.assign({}, state, {
     		maker_created: true
     	})
-    case 'OPEN_CDP':
+    case 'CDP_OPENED':
     	return Object.assign({}, state, {
     		cdp_opened: true
    		})
-   	case 'LOCK_ETH':
+   	case 'ETH_LOCKED':
    		return Object.assign({}, state, {
    			eth_locked: true
    		})
-   	case 'DRAW_DAI':
+   	case 'DAI_DRAWN':
    		return Object.assign({}, state, {
    			dai_drawn: true
    		})
-   	case 'WIPE_DAI':
+   	case 'DAI_WIPED':
    		return Object.assign({}, state, {
    			dai_wiped: true
    		})
-   	case 'SHUT_CDP':
+   	case 'CDP_SHUT':
    		return Object.assign({}, state, {
    			cdp_shut: true
    		})

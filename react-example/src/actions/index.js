@@ -1,44 +1,31 @@
 import Maker from '@makerdao/makerdao-exchange-integration';
 
-export const start = () => ({
-  type: 'START'
+export const started = () => ({
+  type: 'STARTED'
 })
 
-export const createMaker = () => ({
-  type: 'CREATE_MAKER'
+export const makerCreated = () => ({
+  type: 'MAKER_CREATED'
 })
 
-export const openCdp = () => ({
-  type: 'OPEN_CDP'
+export const cdpOpened = () => ({
+  type: 'CDP_OPENED'
 })
 
-export const getCdpId = () => ({
-  type: 'GET_CDP_ID'
+export const ethLocked = () => ({
+  type: 'ETH_LOCKED'
 })
 
-export const createCdpWrapperWithId = () => ({
-  type: 'CREATE_WRAPPER'
+export const daiDrawn = () => ({
+  type: 'DAI_DRAWN'
 })
 
-export const lockEth = () => ({
-  type: 'LOCK_ETH'
+export const daiWiped = () => ({
+  type: 'DAI_WIPED'
 })
 
-export const drawDai = () => ({
-  type: 'DRAW_DAI'
-})
-
-export const wipeDai = () => ({
-  type: 'WIPE_DAI'
-})
-
-export const shutCdp = () => ({
-  type: 'SHUT_CDP'
-})
-
-export const error = (error) => ({
-  type: 'ERROR',
-  error
+export const cdpShut = () => ({
+  type: 'CDP_SHUT'
 })
 
 const drawDaiAsync = (maker, cdp) => async dispatch => {
@@ -48,11 +35,10 @@ const drawDaiAsync = (maker, cdp) => async dispatch => {
   const balance = await dai.balanceOf(defaultAccount);
   console.log('Transaction from drawing Dai:', txn);
   console.log('Dai balance after drawing:', balance.toString());
-  dispatch(drawDai());
+  dispatch(daiDrawn());
 }
 
 const wipeDebtAsync = (maker, cdp) => async dispatch => {
-  console.log('in wipe dai');
   const defaultAccount = maker.service('token').get('web3').defaultAccount();
   const dai = maker.service('token').getToken('DAI');
   const txn = await cdp.wipeDai(.1);
@@ -60,24 +46,27 @@ const wipeDebtAsync = (maker, cdp) => async dispatch => {
 
   console.log('Transaction from wiping Dai:', txn);
   console.log('Dai balance after wiping:', balance.toString());
-  dispatch(wipeDai());
+  dispatch(daiWiped());
 }
 
 const shutCdpAsync = (cdp) => async dispatch => {
   const txn = await cdp.shut();
   console.log('Transaction from shutting the CDP:', txn);
-  dispatch(shutCdp());
+  dispatch(cdpShut());
 }
 
 
 export const startAsync = () => async dispatch => {
-    dispatch(start());
+    dispatch(started());
     const maker = new Maker('kovan', { privateKey: process.env.REACT_APP_PRIVATE_KEY, overrideMetamask: true });
-    dispatch(createMaker());
+    console.log('maker:', maker);
+    dispatch(makerCreated());
     const cdp = await maker.openCdp();
-    dispatch(openCdp());
-    await cdp.lockEth(0.01);
-    dispatch(lockEth());
+    console.log('cdp:', cdp);
+    dispatch(cdpOpened());
+    const lockEthTx = await cdp.lockEth(0.01);
+    console.log('transaction to lock eth:', lockEthTx);
+    dispatch(ethLocked());
     await dispatch(drawDaiAsync(maker, cdp));
     await dispatch(wipeDebtAsync(maker,cdp));
     await dispatch(shutCdpAsync(cdp));
