@@ -20,6 +20,18 @@ export default function App(state = initialState, action) {
    		return Object.assign({}, state, {
    			eth_locked: true
    		})
+   	case 'DRAW_DAI':
+   		return Object.assign({}, state, {
+   			dai_drawn: true
+   		})
+   	case 'WIPE_DAI':
+   		return Object.assign({}, state, {
+   			dai_wiped: true
+   		})
+   	case 'SHUT_CDP':
+   		return Object.assign({}, state, {
+   			cdp_shut: true
+   		})
     default:
       return state
   }

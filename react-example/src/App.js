@@ -5,6 +5,9 @@ import StartButton from './StartButton.js';
 import CreateMaker from './CreateMaker.js';
 import OpenCdp from './OpenCdp.js';
 import LockEth from './LockEth.js';
+import DrawDai from './DrawDai.js';
+import WipeDebt from './WipeDebt.js';
+import ShutCdp from './ShutCdp.js';
 
 class App extends Component {
   constructor(props) {
@@ -55,7 +58,6 @@ class App extends Component {
 
   async lockEth() {
     const { cdp } = this.state;
-
     const txn = await cdp.lockEth(0.1);
     console.log('Transaction from locking eth:', txn);
     return;
@@ -109,14 +111,13 @@ class App extends Component {
           <h1 className="App-title">Maker Exchange Integration</h1>
         </header>
           <StartButton/>
-          <br /><p className="App-intro"><strong>Click Start then check the browser console to see the following functionality:</strong></p><br />
+          <br /><p className="App-intro"><strong>Click Start</strong></p><br />
           <CreateMaker/>
           <OpenCdp/>
           <LockEth/>
-          <p className="App-intro">Drew Dai from CDP</p>
-          <p className="App-intro">Wiped Dai balance from CDP</p>
-          <p className="App-intro">Fetched CDP info</p>
-          <p className="App-intro">Shut CDP</p>
+          <DrawDai/>
+          <WipeDebt/>
+          <ShutCdp/>
       </div>
     );
   }

@@ -41,6 +41,35 @@ export const error = (error) => ({
   error
 })
 
+const drawDaiAsync = (maker, cdp) => async dispatch => {
+  const defaultAccount = maker.service('token').get('web3').defaultAccount();
+  const dai = maker.service('token').getToken('DAI');
+  const txn = await cdp.drawDai(.1);
+  const balance = await dai.balanceOf(defaultAccount);
+  console.log('Transaction from drawing Dai:', txn);
+  console.log('Dai balance after drawing:', balance.toString());
+  dispatch(drawDai());
+}
+
+const wipeDebtAsync = (maker, cdp) => async dispatch => {
+  console.log('in wipe dai');
+  const defaultAccount = maker.service('token').get('web3').defaultAccount();
+  const dai = maker.service('token').getToken('DAI');
+  const txn = await cdp.wipeDai(.1);
+  const balance = await dai.balanceOf(defaultAccount);
+
+  console.log('Transaction from wiping Dai:', txn);
+  console.log('Dai balance after wiping:', balance.toString());
+  dispatch(wipeDai());
+}
+
+const shutCdpAsync = (cdp) => async dispatch => {
+  const txn = await cdp.shut();
+  console.log('Transaction from shutting the CDP:', txn);
+  dispatch(shutCdp());
+}
+
+
 export const startAsync = () => async dispatch => {
     dispatch(start());
     const maker = new Maker('kovan', { privateKey: process.env.REACT_APP_PRIVATE_KEY, overrideMetamask: true });
@@ -49,4 +78,7 @@ export const startAsync = () => async dispatch => {
     dispatch(openCdp());
     await cdp.lockEth(0.01);
     dispatch(lockEth());
+    await dispatch(drawDaiAsync(maker, cdp));
+    await dispatch(wipeDebtAsync(maker,cdp));
+    await dispatch(shutCdpAsync(cdp));
 }
