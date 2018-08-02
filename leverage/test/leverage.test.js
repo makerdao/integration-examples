@@ -6,5 +6,5 @@ test(
     const state = await leverage(1, 399, 0.01);
     expect(state.pethCollateral).toBeGreaterThan(state.initialPethCollateral);
   },
-  180000
+  240000
 );
