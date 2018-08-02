@@ -8,7 +8,7 @@ module.exports = async function(cdpId, options) {
   const targetRatio = Number(options.targetRatio);
   if (isNaN(targetRatio)) throw new Error('Invalid value for targetRatio');
 
-  const maker = new Maker('kovan', {
+  const maker = Maker.create('kovan', {
     privateKey: process.env.KOVAN_PRIVATE_KEY,
     log: false
   });

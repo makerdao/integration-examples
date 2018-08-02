@@ -10,7 +10,7 @@ const log = {
 };
 
 // connect to kovan using infura
-const maker = new Maker('kovan', {
+const maker = Maker.create('kovan', {
   privateKey: process.env.KOVAN_PRIVATE_KEY,
   log: false
 });

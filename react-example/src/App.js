@@ -17,7 +17,7 @@ class App extends Component {
   async componentDidMount() {
     console.log(process.env.REACT_APP_PRIVATE_KEY);
     // Use ConfigFactory and 'kovan' preset to initialize a maker object:
-    const maker = await new Maker('kovan', { privateKey: process.env.REACT_APP_PRIVATE_KEY, overrideMetamask: true });
+    const maker = await Maker.create('kovan', { privateKey: process.env.REACT_APP_PRIVATE_KEY, overrideMetamask: true });
 
     this.setState({ maker: maker });
     console.log('Maker object:', maker);

@@ -1,7 +1,7 @@
 {
   "private": true,
   "dependencies": {
-    "@makerdao/makerdao-exchange-integration": "^0.2.0",
+    "@makerdao/makerdao-exchange-integration": "^0.2.2",
     "minimist": "^1.2.0",
     "round-to": "^3.0.0"
   },
