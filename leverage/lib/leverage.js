@@ -1,5 +1,5 @@
 const invariant = require('invariant');
-const Maker = require('@makerdao/makerdao-exchange-integration');
+const Maker = require('@makerdao/dai');
 
 // descriptive logging
 const debug = require('debug');
@@ -65,20 +65,20 @@ module.exports = async (iterations, priceFloor, principal) => {
   // do `iterations` round trip(s) to the exchange
   for (let i = 0; i < iterations; i++) {
     // exchange the drawn Dai for W-ETH
-    let tx = await maker.service('exchange').sellDai(drawAmt, 'WETH');
+    let tx = await maker.service('exchange').sellDai(drawAmt, Maker.WETH);
 
     // observe the amount of W-ETH received from the exchange
     // by calling `fillAmount` on the returned transaction object
     let returnedWeth = tx.fillAmount();
-    log.action(`exchanged ${drawAmt} Dai for ${returnedWeth} WETH`);
+    log.action(`exchanged ${drawAmt} Dai for ${returnedWeth}`);
 
     // lock all of the W-ETH we just received into our CDP
     await cdp.lockWeth(returnedWeth);
-    log.action(`locked ${returnedWeth} ETH`);
+    log.action(`locked ${returnedWeth}`);
 
     // calculate how much Dai we need to draw in order to
     // re-attain our desired collateralization ratio
-    drawAmt = Math.floor(returnedWeth * priceEth / collatRatio);
+    drawAmt = Math.floor(returnedWeth.toNumber() * priceEth / collatRatio);
     await cdp.drawDai(drawAmt);
     log.action(`drew ${drawAmt} Dai`);
   }
