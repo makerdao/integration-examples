@@ -5,8 +5,12 @@ const MIN_ADD_AMOUNT = 0.0001;
 const ROUND_TO_PLACES = 4;
 
 module.exports = async function(cdpId, options) {
-  const targetRatio = Number(options.targetRatio);
-  if (isNaN(targetRatio)) throw new Error('Invalid value for targetRatio');
+  let targetRatio;
+  try {
+    targetRatio = Maker.USD_DAI(options.targetRatio);
+  } catch (err) {
+    throw new Error(`Invalid value for targetRatio: ${err}`);
+  }
 
   const maker = Maker.create('kovan', {
     privateKey: process.env.KOVAN_PRIVATE_KEY,
@@ -14,21 +18,22 @@ module.exports = async function(cdpId, options) {
   });
   const cdp = await maker.getCdp(cdpId);
 
-  const collateral = await cdp.getCollateralValueInPeth();
-  console.log(`collateral: ${collateral} ETH`);
+  const collateral = await cdp.getCollateralValue();
+  console.log(`collateral: ${collateral}`);
 
-  const debt = await cdp.getDebtValueInDai();
-  console.log(`debt: ${debt} DAI`);
+  const debt = await cdp.getDebtValue();
+  console.log(`debt: ${debt}`);
 
-  const collateralPrice = (await maker
-    .service('price')
-    .getEthPrice()).toNumber();
-  console.log(`ETH/USD: ${collateralPrice}`);
+  const collateralPrice = await maker.service('price').getEthPrice();
+  console.log(`price: ${collateralPrice}`);
 
-  const ratio = collateralPrice * collateral / debt;
-  if (ratio < targetRatio) {
-    let addAmount =
-      (targetRatio * debt - collateralPrice * collateral) / collateralPrice;
+  const ratio = await cdp.getCollateralizationRatio();
+  if (targetRatio.gt(ratio)) {
+    let addAmount = debt
+      .times(targetRatio)
+      .minus(collateral.times(collateralPrice))
+      .div(collateralPrice)
+      .toNumber();
 
     if (addAmount < MIN_ADD_AMOUNT) {
       addAmount = MIN_ADD_AMOUNT;
