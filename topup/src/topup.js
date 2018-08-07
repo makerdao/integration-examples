@@ -1,4 +1,4 @@
-const Maker = require('@makerdao/makerdao-exchange-integration');
+const Maker = require('@makerdao/dai');
 const roundTo = require('round-to');
 
 const MIN_ADD_AMOUNT = 0.0001;
