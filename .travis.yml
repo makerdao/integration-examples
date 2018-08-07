@@ -11,11 +11,11 @@ before_install:
 - npm config set //registry.npmjs.org/:_authToken=$npm_token
 script:
   - cd react-example
-  - npm install
-  - npm run build
+  - yarn install
+  - yarn build
   - cd ../topup
-  - npm install
-  - npm test
+  - yarn install
+  - yarn test
   - cd ../leverage
-  - npm install
-  - npm test
+  - yarn install
+  - yarn test
