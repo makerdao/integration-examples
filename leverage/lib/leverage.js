@@ -47,14 +47,15 @@ module.exports = async (iterations, priceFloor, principal) => {
 
   // calculate a collateralization ratio that will achieve the given price floor
   const collatRatio = priceEth * liquidationRatio / priceFloor;
+  log.state(`Target ratio: ${collatRatio}`);
 
   // lock up all of our principal
   await cdp.lockEth(principal);
   log.action(`locked ${principal} ETH`);
 
   //get initial peth collateral
-  const initialPethCollateral = await cdp.getCollateralValueInPeth();
-  log.state(`${principal} ETH is worth ${initialPethCollateral} PETH`);
+  const initialPethCollateral = await cdp.getCollateralValue(Maker.PETH);
+  log.state(`${principal} ETH is worth ${initialPethCollateral}`);
 
   // calculate how much Dai we need to draw in order
   // to achieve the desired collateralization ratio
@@ -85,8 +86,8 @@ module.exports = async (iterations, priceFloor, principal) => {
 
   // get the final state of our CDP
   const [pethCollateral, debt] = await Promise.all([
-    cdp.getCollateralValueInPeth(),
-    cdp.getDebtValueInDai()
+    cdp.getCollateralValue(Maker.PETH),
+    cdp.getDebtValue()
   ]);
 
   const cdpState = {
