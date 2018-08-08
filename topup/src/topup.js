@@ -12,8 +12,8 @@ module.exports = async function(cdpId, options) {
     throw new Error(`Invalid value for targetRatio: ${err}`);
   }
 
-  const maker = Maker.create('kovan', {
-    privateKey: process.env.KOVAN_PRIVATE_KEY,
+  const maker = Maker.create(process.env.NETWORK, {
+    privateKey: process.env.PRIVATE_KEY,
     log: false
   });
   const cdp = await maker.getCdp(cdpId);

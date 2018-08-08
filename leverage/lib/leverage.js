@@ -9,9 +9,9 @@ const log = {
   title: debug('leverage:header')
 };
 
-// connect to kovan using infura
-const maker = Maker.create('kovan', {
-  privateKey: process.env.KOVAN_PRIVATE_KEY,
+// connect to blockchain using infura
+const maker = Maker.create(process.env.NETWORK, {
+  privateKey: process.env.PRIVATE_KEY,
   log: false
 });
 

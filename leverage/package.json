@@ -17,7 +17,7 @@
     "jest": "^23.2.0"
   },
   "dependencies": {
-    "@makerdao/dai": "^0.5.1",
+    "@makerdao/dai": "0.5.4",
     "debug": "^3.1.0",
     "invariant": "^2.2.4"
   }
