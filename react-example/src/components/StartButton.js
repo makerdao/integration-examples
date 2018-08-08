@@ -10,16 +10,16 @@ const mapStateToProps = state => {
 
 function mapDispatchToProps(dispatch) {
     return({
-        onButtonClick: () => {
+        start: () => {
         	dispatch(startAsync());
         }
     })
 }
 
-const StartButton = ({ started, onButtonClick}) => {
+const StartButton = ({ started, start}) => {
 
   return (
-      <button onClick={onButtonClick}>
+      <button onClick={start}>
         {started ? 'Restart' : 'Start'}
       </button>
     );

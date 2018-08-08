@@ -3,7 +3,7 @@ const leverage = require('../lib/leverage');
 test(
   'leveraged cdp should end up with more eth than it started with',
   async () => {
-    const state = await leverage(1, 399, 0.01);
+    const state = await leverage(1, 199, 0.01);
     expect(state.pethCollateral).toBeGreaterThan(state.initialPethCollateral);
   },
   240000
