@@ -63,13 +63,13 @@ const shutCdpAsync = cdp => async dispatch => {
 
 export const startAsync = () => async dispatch => {
   dispatch(started());
-  const maker = new Maker('kovan', {
+  const maker = new Maker(process.env.REACT_APP_NETWORK, {
     privateKey: process.env.REACT_APP_PRIVATE_KEY,
     overrideMetamask: true
   });
   console.log('maker:', maker);
   dispatch(makerCreated());
-  const cdp = await maker.openCdp();
+  const cdp = await maker.getCdp(2741);
   console.log('cdp:', cdp);
   dispatch(cdpOpened());
   const lockEthTx = await cdp.lockEth(0.01);

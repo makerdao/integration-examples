@@ -8,7 +8,7 @@ cache:
   - topup/node_modules
   - leverage/node_modules
 env:
-  - NETWORK="kovan"
+  - NETWORK="decentralized-oasis-without-proxies"
 before_install:
 - npm config set //registry.npmjs.org/:_authToken=$npm_token
 script:

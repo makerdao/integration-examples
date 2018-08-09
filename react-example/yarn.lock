@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@makerdao/dai@^0.5.1":
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/@makerdao/dai/-/dai-0.5.3.tgz#6170bbf977b01070c55f3ceeed015a8ee7b1d402"
+"@makerdao/dai@^0.5.5":
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/@makerdao/dai/-/dai-0.5.5.tgz#0e16c78417c7378a6aef1163235c3a089953fad8"
   dependencies:
     babel-polyfill "^6.26.0"
     bignumber.js "^7.2.1"
