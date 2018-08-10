@@ -69,7 +69,7 @@ export const startAsync = () => async dispatch => {
   });
   console.log('maker:', maker);
   dispatch(makerCreated());
-  const cdp = await maker.getCdp(2741);
+  const cdp = await maker.openCdp();
   console.log('cdp:', cdp);
   dispatch(cdpOpened());
   const lockEthTx = await cdp.lockEth(0.01);
