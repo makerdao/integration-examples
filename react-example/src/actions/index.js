@@ -63,7 +63,7 @@ const shutCdpAsync = cdp => async dispatch => {
 
 export const startAsync = () => async dispatch => {
   dispatch(started());
-  const maker = new Maker(process.env.REACT_APP_NETWORK, {
+  const maker = Maker.create(process.env.REACT_APP_NETWORK, {
     privateKey: process.env.REACT_APP_PRIVATE_KEY,
     overrideMetamask: true
   });
