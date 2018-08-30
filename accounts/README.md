@@ -1,14 +1,14 @@
-# Accounts Demo
+# Multiple Accounts Demo App
 
-A demo app that shows support for multiple accounts in the Dai.js library.
+Demonstrates support for multiple accounts in [Dai.js](daijs).
 
 Includes plugins that add support for Ledger and Trezor:
 - [dai-plugin-trezor-web](trezor-plugin)
 - [dai-plugin-ledger-web](ledger-plugin)
 
-It is set up to work with the Dai.js [test chain](testchain). You can add
-accounts from Trezor, Ledger, MetaMask, and private keys, transfer ETH between
-accounts, and open CDPs with any of them.
+It depends on a running Dai.js [test chain](testchain). You can add accounts
+from Trezor, Ledger, MetaMask, and private keys; transfer ETH between accounts;
+and open CDPs with any of them.
 
 ```shell
 yarn install

@@ -2,6 +2,10 @@
   Integration/Maker.js Examples
 </h1>
 
+### accounts
+
+Demo of multiple account support. See [README](https://github.com/makerdao/integration-examples/blob/master/accounts/README.md).
+
 ### leverage
 
 Lock ETH -> Draw DAI -> Exchange Dai for ETH -> repeat
