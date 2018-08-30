@@ -1,17 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import './App.css';
 import setupMaker, { keys } from './setupMaker';
-import AccountTable from './AccountTable';
 
 export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      path: "44'/60'/0'/0/0",
       accounts: [],
       cdps: [],
-      keyIndex: 1,
-      trezorIndex: 1,
       useMetaMask: window.location.search.includes('metamask')
     };
   }
@@ -44,30 +40,6 @@ export default class App extends Component {
     });
   };
 
-  findTrezor = async () => {
-    const { maker, path, trezorIndex } = this.state;
-    try {
-      await maker.addAccount('myTrezor' + trezorIndex, {
-        type: 'trezor',
-        path
-      });
-      this.setState({ trezorIndex: trezorIndex + 1 });
-      await this.updateAccounts();
-    } catch (err) {
-      alert("Couldn't add Trezor: " + err.message);
-    }
-  };
-
-  findLedger = async () => {
-    const { maker, path } = this.state;
-    try {
-      await maker.addAccount('myLedger', { type: 'ledger', path });
-      await this.updateAccounts();
-    } catch (err) {
-      alert("Couldn't add Ledger: " + err.message);
-    }
-  };
-
   useAccount = async name => {
     const { maker } = this.state;
     maker.useAccount(name);
@@ -82,10 +54,86 @@ export default class App extends Component {
     this.setState(({ cdps }) => ({
       cdps: [...cdps, { id, owner: info.lad.toLowerCase() }]
     }));
+    await this.updateAccounts();
   };
 
-  addAccount = async type => {
-    const { maker, keyIndex } = this.state;
+  render() {
+    const { accounts, currentAccount, cdps, maker, useMetaMask } = this.state;
+    return (
+      <div className="container">
+        <div className="header">
+          Dai.js demo: Multiple accounts &amp; hardware wallet integration
+        </div>
+        <div className="sidebar">
+          <div>
+            <h4>Add accounts</h4>
+            <AddAccounts
+              addAccount={this.addAccount}
+              maker={maker}
+              updateAccounts={this.updateAccounts}
+              setPath={path => this.setState({ path })}
+            />
+          </div>
+          <div>
+            <h4>
+              Using account:{' '}
+              <AccountSelect
+                accounts={accounts}
+                value={currentAccount && currentAccount.name}
+                onSelect={name => this.useAccount(name)}
+              />
+            </h4>
+            <Transfer
+              {...{ currentAccount, accounts, maker }}
+              updateAccounts={this.updateAccounts}
+            />
+            <button onClick={this.openCdp}>Open a CDP</button>
+          </div>
+          <div>
+            {useMetaMask ? (
+              <Fragment>
+                Using MetaMask provider for all transactions.
+                <br />
+                <a href="/">Switch to HTTP provider</a>
+              </Fragment>
+            ) : (
+              <Fragment>
+                Using HTTP provider for all transactions from non-Metamask
+                accounts.
+                <br />
+                <a href="/?metamask">Switch to MetaMask</a>
+              </Fragment>
+            )}
+          </div>
+        </div>
+        <DataTables {...{ accounts, currentAccount, cdps }} />
+      </div>
+    );
+  }
+}
+
+const DataTables = ({ accounts, currentAccount, cdps }) => (
+  <div className="main">
+    <h4>Available accounts</h4>
+    <AccountTable {...{ accounts, currentAccount }} />
+    <h4>CDPs created</h4>
+    <CdpsTable cdps={cdps} />
+  </div>
+);
+
+class AddAccounts extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      path: "44'/60'/0'/0/0",
+      keyIndex: 1,
+      trezorIndex: 1
+    };
+  }
+
+  add = async type => {
+    const { maker } = this.props;
+    const { keyIndex, path, trezorIndex } = this.state;
     try {
       switch (type) {
         case 'browser':
@@ -103,76 +151,47 @@ export default class App extends Component {
           this.setState({ keyIndex: keyIndex + 1 });
           break;
         }
+        case 'trezor':
+          await maker.addAccount('myTrezor' + trezorIndex, {
+            type: 'trezor',
+            path
+          });
+          this.setState({ trezorIndex: trezorIndex + 1 });
+          break;
+        case 'ledger':
+          await maker.addAccount('myLedger', { type: 'ledger', path });
+          break;
         default:
           throw new Error('unknown type: ' + type);
       }
-      await this.updateAccounts();
+      await this.props.updateAccounts();
     } catch (err) {
       alert(err.message);
     }
   };
 
   render() {
-    const {
-      accounts,
-      currentAccount,
-      path,
-      cdps,
-      maker,
-      useMetaMask
-    } = this.state;
     return (
-      <div>
-        <h3>Demo: Multiple accounts &amp; hardware wallet integration</h3>
-        {useMetaMask ? (
-          <p>
-            Using MetaMask as provider. <a href="/">Switch</a>
-          </p>
-        ) : (
-          <p>
-            Using HTTP provider. <a href="/?metamask">Switch</a>
-          </p>
-        )}
-        <h4>Accounts</h4>
-        <AddAccounts addAccount={this.addAccount} />
-        <AccountTable
-          {...{ accounts, currentAccount }}
-          useAccount={this.useAccount}
-        />
-        <button onClick={this.findTrezor}>Connect to Trezor</button>{' '}
-        <button onClick={this.findLedger}>Connect to Ledger</button>{' '}
+      <div className="buttonRow">
+        <button onClick={() => this.add('browser')}>MetaMask</button>
+        <button onClick={() => this.add('provider')}>Provider</button>
+        <button onClick={() => this.add('privateKey')}>Private key</button>
+        <br />
+        <button onClick={() => this.add('trezor')}>Trezor</button>
+        <button onClick={() => this.add('ledger')}>Ledger</button>
+        <br />
         <label>
-          Use derivation path:{' '}
+          Derivation path:{' '}
           <input
             type="text"
-            value={path}
+            value={this.state.path}
             onChange={ev => this.setState({ path: ev.target.value })}
           />
         </label>
-        <Transfer
-          accounts={accounts}
-          maker={maker}
-          updateAccounts={this.updateAccounts}
-        />
-        <OpenCdp openCdp={this.openCdp} cdps={cdps} />
       </div>
     );
   }
 }
-
-const AddAccounts = ({ addAccount }) => (
-  <p className="buttonRow">
-    <button onClick={() => addAccount('browser')}>
-      Add account from MetaMask
-    </button>
-    <button onClick={() => addAccount('provider')}>
-      Add account from provider
-    </button>
-    <button onClick={() => addAccount('privateKey')}>
-      Add another private key account
-    </button>
-  </p>
-);
 
 class Transfer extends Component {
   constructor(props) {
@@ -180,61 +199,38 @@ class Transfer extends Component {
     this.state = {};
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { accounts } = this.props;
-    const { from, to } = this.state;
-    if (accounts.length > 0 && !from) {
-      this.setState({
-        from: accounts[0].name,
-        to: accounts[0].name
-      });
-    }
-    if (accounts.length > 1 && from === to) {
-      const changed = prevState.from !== from ? 'from' : 'to';
-      const unchanged = changed === 'from' ? 'to' : 'from';
-      const name = this.state[changed];
-      const otherAccount = accounts.find(a => a.name !== name);
-      this.setState({
-        [unchanged]: otherAccount.name
-      });
+  componentDidUpdate() {
+    if (!this.state.toName && this.props.accounts.length > 1) {
+      this.setState({ toName: this.props.accounts[1].name });
     }
   }
 
-  setFrom = event => {
-    this.setState({ from: event.target.value });
-  };
-
-  setTo = event => {
-    this.setState({ to: event.target.value });
-  };
-
   transfer = async () => {
-    const { from, to } = this.state;
-    const { accounts, maker } = this.props;
-    if (!to) return alert('Pick a recipient.');
-    if (from === to) return alert('Sender and receiver must be different.');
-    const sender = accounts.find(a => a.name === from);
-    const receiver = accounts.find(a => a.name === to);
+    const { toName } = this.state;
+    const {
+      currentAccount: { name: fromName },
+      accounts,
+      maker
+    } = this.props;
+    if (!toName) return alert('Pick a recipient.');
+    if (fromName === toName)
+      return alert('Sender and receiver must be different.');
+    const sender = accounts.find(a => a.name === fromName);
+    const receiver = accounts.find(a => a.name === toName);
+
     maker.useAccount(sender.name);
     await maker.getToken('ETH').transfer(receiver.address, 1);
     await this.props.updateAccounts();
   };
 
   render() {
-    const { accounts } = this.props;
     return (
       <p>
-        Send 1 ETH from{' '}
+        Send 1 ETH to{' '}
         <AccountSelect
-          accounts={accounts}
-          value={this.state.from}
-          onChange={this.setFrom}
-        />{' '}
-        to{' '}
-        <AccountSelect
-          accounts={accounts}
-          value={this.state.to}
-          onChange={this.setTo}
+          accounts={this.props.accounts}
+          value={this.state.toName}
+          onSelect={toName => this.setState({ toName })}
         />{' '}
         <button onClick={this.transfer}>Transfer</button>
       </p>
@@ -242,39 +238,54 @@ class Transfer extends Component {
   }
 }
 
-const AccountSelect = ({ accounts, onChange, value }) => {
-  return (
-    <select value={value} onChange={onChange}>
-      {accounts.map(({ name }) => (
-        <option key={name} value={name}>
-          {name}
-        </option>
-      ))}
-    </select>
-  );
-};
+const AccountSelect = ({ value, onSelect, accounts }) => (
+  <select value={value} onChange={ev => onSelect(ev.target.value)}>
+    {accounts.map(({ name }) => (
+      <option key={name} value={name}>
+        {name}
+      </option>
+    ))}
+  </select>
+);
 
-const OpenCdp = ({ openCdp, cdps }) => (
-  <Fragment>
-    <p>
-      <button onClick={openCdp}>Open a CDP using the selected account</button>
-    </p>
-    <h4>CDPs created</h4>
-    <table>
-      <thead>
-        <tr>
-          <th>id</th>
-          <th>owner</th>
+const CdpsTable = ({ cdps }) => (
+  <table>
+    <thead>
+      <tr>
+        <th>id</th>
+        <th>owner</th>
+      </tr>
+    </thead>
+    <tbody>
+      {cdps.map(({ id, owner }) => (
+        <tr key={id}>
+          <td>{id}</td>
+          <td>{owner}</td>
         </tr>
-      </thead>
-      <tbody>
-        {cdps.map(({ id, owner }) => (
-          <tr key={id}>
-            <td>{id}</td>
-            <td>{owner}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </Fragment>
+      ))}
+    </tbody>
+  </table>
+);
+
+const AccountTable = ({ accounts }) => (
+  <table>
+    <thead>
+      <tr>
+        <th>name</th>
+        <th>type</th>
+        <th>address</th>
+        <th>ETH balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      {accounts.map(({ name, address, balance, type }) => (
+        <tr key={name}>
+          <td>{name}</td>
+          <td>{type}</td>
+          <td>{address}</td>
+          <td>{balance}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
 );

@@ -11,10 +11,12 @@ export const keys = [
   'c9e69677a85b5f66969e134b915320942f4a1a6529aa1e7bc4cb6e3d059a1e6b'
 ];
 
+const TESTNET_URL = 'http://localhost:2000';
+
 export default async function(useMetaMask) {
   window.Maker = Maker;
   const maker = Maker.create(useMetaMask ? 'browser' : 'http', {
-    url: 'http://localhost:2000',
+    url: TESTNET_URL,
     plugins: [trezorPlugin, ledgerPlugin],
     accounts: {
       test1: { type: 'privateKey', key: keys[0] }
@@ -24,7 +26,8 @@ export default async function(useMetaMask) {
   await maker.authenticate();
   if (maker.service('web3').networkId() !== 999) {
     alert(
-      'To work with testchain accounts, configure MetaMask to use "Custom RPC" with address "http://localhost:2000".'
+      'To work with testchain accounts, configure MetaMask to use ' +
+        `"Custom RPC" with address "${TESTNET_URL}".`
     );
   }
   return maker;
