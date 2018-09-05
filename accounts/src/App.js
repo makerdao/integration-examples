@@ -127,13 +127,14 @@ class AddAccounts extends Component {
     this.state = {
       path: "44'/60'/0'/0/0",
       keyIndex: 1,
-      trezorIndex: 1
+      trezorIndex: 1,
+      ledgerIndex: 1
     };
   }
 
   add = async type => {
     const { maker } = this.props;
-    const { keyIndex, path, trezorIndex } = this.state;
+    const { keyIndex, path, trezorIndex, ledgerIndex } = this.state;
     try {
       switch (type) {
         case 'browser':
@@ -158,19 +159,49 @@ class AddAccounts extends Component {
           });
           this.setState({ trezorIndex: trezorIndex + 1 });
           break;
-        case 'ledger':
-          await maker.addAccount('myLedger', { type: 'ledger', path });
+        case 'ledgerLive':
+          await maker.addAccount('myLedger' + ledgerIndex, {
+            type: 'ledger',
+            accountsLength: 5,
+            choose: (addresses, callback) => {
+              this.setState({
+                accountChoices: addresses,
+                pickAccount: callback
+              });
+            }
+          });
+          this.setState({ ledgerIndex: ledgerIndex + 1 });
+          break;
+        case 'ledgerLegacy':
+          await maker.addAccount('myLedger' + ledgerIndex, {
+            type: 'ledger',
+            legacy: true,
+            accountsLength: 5,
+            choose: (addresses, callback) => {
+              this.setState({
+                accountChoices: addresses,
+                pickAccount: callback
+              });
+            }
+          });
+          this.setState({ ledgerIndex: ledgerIndex + 1 });
           break;
         default:
           throw new Error('unknown type: ' + type);
       }
       await this.props.updateAccounts();
     } catch (err) {
-      alert(err.message);
+      alert("Couldn't add account: " + err.message);
     }
   };
 
+  pick(address) {
+    this.state.pickAccount(null, address);
+    this.setState({ accountChoices: null });
+  }
+
   render() {
+    const { path, accountChoices } = this.state;
     return (
       <div className="buttonRow">
         <button onClick={() => this.add('browser')}>MetaMask</button>
@@ -178,16 +209,28 @@ class AddAccounts extends Component {
         <button onClick={() => this.add('privateKey')}>Private key</button>
         <br />
         <button onClick={() => this.add('trezor')}>Trezor</button>
-        <button onClick={() => this.add('ledger')}>Ledger</button>
+        <button onClick={() => this.add('ledgerLive')}>Ledger Live</button>
+        <button onClick={() => this.add('ledgerLegacy')}>Ledger legacy</button>
         <br />
         <label>
           Derivation path:{' '}
           <input
             type="text"
-            value={this.state.path}
+            value={path}
             onChange={ev => this.setState({ path: ev.target.value })}
           />
         </label>
+        {accountChoices && (
+          <div className="account-picker">
+            <h5>Pick an address</h5>
+            {accountChoices.map(address => (
+              <div key={address} className="account-choice">
+                {address}
+                <button onClick={() => this.pick(address)}>Pick</button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   }

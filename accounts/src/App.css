@@ -1,4 +1,4 @@
-h1, h2, h3, h4, p {
+h1, h2, h3, h4, h5, p {
   margin-top: 0;
 }
 
@@ -59,4 +59,26 @@ table td, table th {
 
 .buttonRow button {
   margin-right: 4px;
+}
+
+.account-picker {
+  margin-top: 1em;
+  background-color: cornsilk;
+  padding: 10px;
+}
+
+.account-choice {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.account-choice:last-child {
+  margin-bottom: 0;
+}
+
+.account-choice button {
+  margin-left: 8px;
 }
