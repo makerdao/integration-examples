@@ -155,7 +155,14 @@ class AddAccounts extends Component {
         case 'trezor':
           await maker.addAccount('myTrezor' + trezorIndex, {
             type: 'trezor',
-            path
+            path: path,
+            accountsLength: 5,
+            choose: (addresses, callback) => {
+              this.setState({
+                accountChoices: addresses,
+                pickAccount: callback
+              });
+            }
           });
           this.setState({ trezorIndex: trezorIndex + 1 });
           break;
