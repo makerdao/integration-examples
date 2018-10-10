@@ -46,6 +46,12 @@ export default class App extends Component {
     await this.updateAccounts();
   };
 
+  useAccountWithAddress = async address => {
+    const { maker } = this.state;
+    maker.useAccountWithAddress(address);
+    await this.updateAccounts();
+  };
+
   openCdp = async () => {
     const { maker } = this.state;
     const cdp = await maker.openCdp();
@@ -75,14 +81,23 @@ export default class App extends Component {
             />
           </div>
           <div>
-            <h4>
-              Using account:{' '}
-              <AccountSelect
+            <h4> Select account to use... </h4>
+            <h5>
+              By name:{' '}
+              <AccountSelectByName
                 accounts={accounts}
                 value={currentAccount && currentAccount.name}
                 onSelect={name => this.useAccount(name)}
               />
-            </h4>
+            </h5>
+            <h5>
+              Or by address:{' '}
+              <AccountSelectByAddress
+                  accounts={accounts}
+                  value={currentAccount && currentAccount.address}
+                  onSelect={address => this.useAccountWithAddress(address)}
+              />
+            </h5>
             <Transfer
               {...{ currentAccount, accounts, maker }}
               updateAccounts={this.updateAccounts}
@@ -277,7 +292,7 @@ class Transfer extends Component {
     return (
       <p>
         Send 1 ETH to{' '}
-        <AccountSelect
+        <AccountSelectByName
           accounts={this.props.accounts}
           value={this.state.toName}
           onSelect={toName => this.setState({ toName })}
@@ -288,11 +303,21 @@ class Transfer extends Component {
   }
 }
 
-const AccountSelect = ({ value, onSelect, accounts }) => (
+const AccountSelectByName = ({ value, onSelect, accounts }) => (
   <select value={value} onChange={ev => onSelect(ev.target.value)}>
     {accounts.map(({ name }) => (
       <option key={name} value={name}>
         {name}
+      </option>
+    ))}
+  </select>
+);
+
+const AccountSelectByAddress = ({ value, onSelect, accounts }) => (
+  <select value={value} onChange={ev => onSelect(ev.target.value)}>
+    {accounts.map(({ address }) => (
+      <option key={address} value={address}>
+        {address}
       </option>
     ))}
   </select>
