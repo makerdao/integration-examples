@@ -190,6 +190,20 @@ class AddAccounts extends Component {
           });
           this.setState({ trezorIndex: trezorIndex + 1 });
           break;
+        case 'trezorNoName':
+          await maker.addAccount({
+            type: 'trezor',
+            path: path,
+            accountsLength: 5,
+            choose: (addresses, callback) => {
+              this.setState({
+                accountChoices: addresses,
+                pickAccount: callback
+              });
+            }
+          });
+          this.setState({ trezorIndex: trezorIndex + 1 });
+          break;
         case 'ledgerLive':
           await maker.addAccount('myLedger' + ledgerIndex, {
             type: 'ledger',
@@ -244,6 +258,7 @@ class AddAccounts extends Component {
         <button onClick={() => this.add('ledgerLegacy')}>Ledger legacy</button>
         <br />
         <button onClick={() => this.add('privateKeyNoName')}>Private key - no name</button>
+        <button onClick={() => this.add('trezorNoName')}>Trezor - no name</button>
         <br />
         <label>
           Derivation path:{' '}
