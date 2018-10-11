@@ -167,6 +167,15 @@ class AddAccounts extends Component {
           this.setState({ keyIndex: keyIndex + 1 });
           break;
         }
+        case 'privateKeyNoName': {
+          if (keyIndex >= keys.length) return alert('No more keys');
+          await maker.addAccount(null, {
+            type: 'privateKey',
+            key: keys[keyIndex]
+          });
+          this.setState({ keyIndex: keyIndex + 1 });
+          break;
+        }
         case 'trezor':
           await maker.addAccount('myTrezor' + trezorIndex, {
             type: 'trezor',
@@ -233,6 +242,8 @@ class AddAccounts extends Component {
         <button onClick={() => this.add('trezor')}>Trezor</button>
         <button onClick={() => this.add('ledgerLive')}>Ledger Live</button>
         <button onClick={() => this.add('ledgerLegacy')}>Ledger legacy</button>
+        <br />
+        <button onClick={() => this.add('privateKeyNoName')}>Private key - no name</button>
         <br />
         <label>
           Derivation path:{' '}
