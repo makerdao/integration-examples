@@ -30,7 +30,7 @@ export default class App extends Component {
       maker.listAccounts().map(async account => {
         return {
           ...account,
-          balance: await maker.getToken('ETH').balanceOf(account.address)
+          balance: await maker.getToken('ETH').balanceOf(account.address).toString()
         };
       })
     );
