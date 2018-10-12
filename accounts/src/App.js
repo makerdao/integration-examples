@@ -30,7 +30,7 @@ export default class App extends Component {
       maker.listAccounts().map(async account => {
         return {
           ...account,
-          balance: await maker.getToken('ETH').balanceOf(account.address).toString()
+          balance: await this.toStr(maker.getToken('ETH').balanceOf(account.address))
         };
       })
     );
@@ -38,6 +38,12 @@ export default class App extends Component {
       accounts,
       currentAccount: maker.currentAccount()
     });
+  };
+
+  toStr = async promise => {
+    const val = await promise;
+    console.log('val.toString()', val.toString());
+    return val.toString();
   };
 
   useAccount = async name => {
