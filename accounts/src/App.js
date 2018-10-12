@@ -42,7 +42,6 @@ export default class App extends Component {
 
   toStr = async promise => {
     const val = await promise;
-    console.log('val.toString()', val.toString());
     return val.toString();
   };
 
