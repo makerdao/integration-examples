@@ -30,7 +30,7 @@ export default class App extends Component {
       maker.listAccounts().map(async account => {
         return {
           ...account,
-          balance: await this.toStr(maker.getToken('ETH').balanceOf(account.address))
+          balance: (await maker.getToken('ETH').balanceOf(account.address)).toString()
         };
       })
     );
@@ -40,20 +40,25 @@ export default class App extends Component {
     });
   };
 
-  toStr = async promise => {
-    const val = await promise;
-    return val.toString();
-  };
-
   useAccount = async name => {
     const { maker } = this.state;
-    maker.useAccount(name);
+    try{
+      maker.useAccount(name);
+    }catch(e){
+      alert(e);
+      return;
+    }
     await this.updateAccounts();
   };
 
   useAccountWithAddress = async address => {
     const { maker } = this.state;
-    maker.useAccountWithAddress(address);
+    try{
+      maker.useAccountWithAddress(address);
+    }catch(e){
+      alert(e);
+      return;
+    }
     await this.updateAccounts();
   };
 
