@@ -16,6 +16,6 @@ HTTPS=true yarn start # HTTPS is necessary for Ledger
 ```
 
 [daijs]: https://github.com/makerdao/dai.js
-[testchain]: https://github.com/makerdao/dai.js/blob/dev/testchain/scripts/with-deployed-system
+[testchain]: https://github.com/makerdao/testchain/tree/dai.js
 [trezor-plugin]: https://github.com/makerdao/dai-plugin-trezor-web
 [ledger-plugin]: https://github.com/makerdao/dai-plugin-ledger-web
