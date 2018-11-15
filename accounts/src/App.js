@@ -30,7 +30,7 @@ export default class App extends Component {
       maker.listAccounts().map(async account => {
         return {
           ...account,
-          balance: await maker.getToken('ETH').balanceOf(account.address)
+          balance: (await maker.getToken('ETH').balanceOf(account.address)).toString()
         };
       })
     );
@@ -42,7 +42,23 @@ export default class App extends Component {
 
   useAccount = async name => {
     const { maker } = this.state;
-    maker.useAccount(name);
+    try{
+      maker.useAccount(name);
+    }catch(e){
+      alert(e);
+      return;
+    }
+    await this.updateAccounts();
+  };
+
+  useAccountWithAddress = async address => {
+    const { maker } = this.state;
+    try{
+      maker.useAccountWithAddress(address);
+    }catch(e){
+      alert(e);
+      return;
+    }
     await this.updateAccounts();
   };
 
@@ -74,14 +90,23 @@ export default class App extends Component {
             />
           </div>
           <div>
-            <h4>
-              Using account:{' '}
-              <AccountSelect
+            <h4> Select account to use... </h4>
+            <h5>
+              By name:{' '}
+              <AccountSelectByName
                 accounts={accounts}
                 value={currentAccount && currentAccount.name}
                 onSelect={name => this.useAccount(name)}
               />
-            </h4>
+            </h5>
+            <h5>
+              Or by address:{' '}
+              <AccountSelectByAddress
+                  accounts={accounts}
+                  value={currentAccount && currentAccount.address}
+                  onSelect={address => this.useAccountWithAddress(address)}
+              />
+            </h5>
             <Transfer
               {...{ currentAccount, accounts, maker }}
               updateAccounts={this.updateAccounts}
@@ -153,10 +178,40 @@ class AddAccounts extends Component {
           this.setState({ keyIndex: keyIndex + 1 });
           break;
         }
+        case 'privateKeyNoName': {
+          if (keyIndex >= keys.length) return alert('No more keys');
+          await maker.addAccount(null, {
+            type: 'privateKey',
+            key: keys[keyIndex]
+          });
+          this.setState({ keyIndex: keyIndex + 1 });
+          break;
+        }
         case 'trezor':
           await maker.addAccount('myTrezor' + trezorIndex, {
             type: 'trezor',
-            path
+            path: path,
+            accountsLength: 5,
+            choose: (addresses, callback) => {
+              this.setState({
+                accountChoices: addresses,
+                pickAccount: callback
+              });
+            }
+          });
+          this.setState({ trezorIndex: trezorIndex + 1 });
+          break;
+        case 'trezorNoName':
+          await maker.addAccount({
+            type: 'trezor',
+            path: path,
+            accountsLength: 5,
+            choose: (addresses, callback) => {
+              this.setState({
+                accountChoices: addresses,
+                pickAccount: callback
+              });
+            }
           });
           this.setState({ trezorIndex: trezorIndex + 1 });
           break;
@@ -212,6 +267,9 @@ class AddAccounts extends Component {
         <button onClick={() => this.add('trezor')}>Trezor</button>
         <button onClick={() => this.add('ledgerLive')}>Ledger Live</button>
         <button onClick={() => this.add('ledgerLegacy')}>Ledger legacy</button>
+        <br />
+        <button onClick={() => this.add('privateKeyNoName')}>Private key - no name</button>
+        <button onClick={() => this.add('trezorNoName')}>Trezor - no name</button>
         <br />
         <label>
           Derivation path:{' '}
@@ -276,7 +334,7 @@ class Transfer extends Component {
     return (
       <p>
         Send 0.1 ETH to{' '}
-        <AccountSelect
+        <AccountSelectByName
           accounts={this.props.accounts}
           value={this.state.toName}
           onSelect={toName => this.setState({ toName })}
@@ -287,11 +345,21 @@ class Transfer extends Component {
   }
 }
 
-const AccountSelect = ({ value, onSelect, accounts }) => (
+const AccountSelectByName = ({ value, onSelect, accounts }) => (
   <select value={value} onChange={ev => onSelect(ev.target.value)}>
     {accounts.map(({ name }) => (
       <option key={name} value={name}>
         {name}
+      </option>
+    ))}
+  </select>
+);
+
+const AccountSelectByAddress = ({ value, onSelect, accounts }) => (
+  <select value={value} onChange={ev => onSelect(ev.target.value)}>
+    {accounts.map(({ address }) => (
+      <option key={address} value={address}>
+        {address}
       </option>
     ))}
   </select>
@@ -332,7 +400,7 @@ const AccountTable = ({ accounts }) => (
           <td>{name}</td>
           <td>{type}</td>
           <td>{address}</td>
-          <td>{balance.toString()}</td>
+          <td>{balance}</td>
         </tr>
       ))}
     </tbody>
