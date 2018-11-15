@@ -49,10 +49,9 @@ export default class App extends Component {
   openCdp = async () => {
     const { maker } = this.state;
     const cdp = await maker.openCdp();
-    const id = await cdp.getId();
     const info = await cdp.getInfo();
     this.setState(({ cdps }) => ({
-      cdps: [...cdps, { id, owner: info.lad.toLowerCase() }]
+      cdps: [...cdps, { id: cdp.id, owner: info.lad.toLowerCase() }]
     }));
     await this.updateAccounts();
   };
@@ -262,14 +261,19 @@ class Transfer extends Component {
     const receiver = accounts.find(a => a.name === toName);
 
     maker.useAccount(sender.name);
-    await maker.getToken('ETH').transfer(receiver.address, 1);
+    const promise = maker.getToken('ETH').transfer(receiver.address, 0.1);
+    const txMgr = maker.service('transactionManager');
+    txMgr.listen(promise, (tx, state, error) => {
+      console.log(state, tx, error);
+    });
+    await promise;
     await this.props.updateAccounts();
   };
 
   render() {
     return (
       <p>
-        Send 1 ETH to{' '}
+        Send 0.1 ETH to{' '}
         <AccountSelect
           accounts={this.props.accounts}
           value={this.state.toName}
@@ -326,7 +330,7 @@ const AccountTable = ({ accounts }) => (
           <td>{name}</td>
           <td>{type}</td>
           <td>{address}</td>
-          <td>{balance}</td>
+          <td>{balance.toString()}</td>
         </tr>
       ))}
     </tbody>

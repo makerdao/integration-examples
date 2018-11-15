@@ -13,6 +13,11 @@ export const keys = [
 
 const TESTNET_URL = 'http://localhost:2000';
 
+// using http preset and kovan.infura.io results in error: "Failed to subscribe
+// to new newBlockHeaders to confirm the transaction receipts", because HTTP
+// provider doesn't support subscriptions.
+// const KOVAN_INFURA_URL = 'https://kovan.infura.io';
+
 export default async function(useMetaMask) {
   window.Maker = Maker;
   const maker = Maker.create(useMetaMask ? 'browser' : 'http', {
@@ -30,5 +35,6 @@ export default async function(useMetaMask) {
         `"Custom RPC" with address "${TESTNET_URL}".`
     );
   }
+  window.maker = maker;
   return maker;
 }
