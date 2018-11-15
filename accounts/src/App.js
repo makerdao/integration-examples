@@ -89,6 +89,8 @@ export default class App extends Component {
             <button onClick={this.openCdp}>Open a CDP</button>
           </div>
           <div>
+            Chain ID: {maker && maker.service('web3').networkId()}
+            <br />
             {useMetaMask ? (
               <Fragment>
                 Using MetaMask provider for all transactions.
