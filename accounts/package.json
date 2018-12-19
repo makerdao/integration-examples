@@ -4,8 +4,8 @@
   "private": true,
   "dependencies": {
     "@makerdao/dai": "^0.9.7",
-    "@makerdao/dai-plugin-ledger-web": "^0.9.3",
-    "@makerdao/dai-plugin-trezor-web": "^0.9.2",
+    "@makerdao/dai-plugin-ledger-web": "^0.9.7",
+    "@makerdao/dai-plugin-trezor-web": "^0.9.4",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-scripts": "1.1.4"
