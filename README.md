@@ -24,7 +24,7 @@ babel-node . 1 400 0.1
 
 ### react-example
 
-Interact with Maker.js in the browser.
+Interact with Dai.js in the browser.
 
 To set your private key:
 * `cd react-example`
