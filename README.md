@@ -1,5 +1,5 @@
 <h1 align="center">
-  Integration/Maker.js Examples
+  Dai.js Examples
 </h1>
 
 ### accounts
