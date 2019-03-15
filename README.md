@@ -46,3 +46,11 @@ babel-node . 1234 -t 2.5 -v
 * The first argument is a CDP ID.
 * The value for the `-t` argument is the target ratio.
 * `-v` enables verbose mode (shows stack traces for errors).
+
+### wyre
+
+Use Dai.js along with the Wyre SDK for an easy fiat on or off ramp in your application.
+Uses version 1.0.5 of the Wyre API, which may need an upgrade soon.
+
+__Example Usage__
+See the project's README for detailed instructions

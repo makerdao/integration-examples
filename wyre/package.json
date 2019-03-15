@@ -1,0 +1,16 @@
+{
+  "name": "dai-plugin-wyre",
+  "version": "1.0.0",
+  "description": "Uses the Wyre SDK with Dai.js to allow combining Dai / CDPs with fiat on/off ramps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no tests specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@makerdao/dai": "^0.13.0",
+    "@wyre/api": "^1.0.5"
+  }
+}
