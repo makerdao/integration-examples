@@ -6,7 +6,7 @@ This is a JS script that connects to wyre and dai APIs to:
 - Send DAI back to an ethereum account from wyre
 - Send USD to a bank account. 
 
-Run `npm install` do get the necessary dependencies.    
+Run `npm install` to get the necessary dependencies.    
 #### NOTE: By default you'll interact with the `kovan` test network. If you want to try it on the `mainnnet` just change the `kovan` parameter to `mainnet` in `maker.create()` function in `dai.js` file.
 
 In order to transfer you need to provide your wallet keys.
