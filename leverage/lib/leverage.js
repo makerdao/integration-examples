@@ -1,5 +1,6 @@
 const invariant = require('invariant');
 const Maker = require('@makerdao/dai');
+const infuraProjectId = 'c3f0f26a4c1742e0949d8eedfc47be67'; //dai.js project id
 
 // descriptive logging
 const debug = require('debug');
@@ -9,10 +10,14 @@ const log = {
   title: debug('leverage:header')
 };
 
+
 // connect to blockchain using infura
 const maker = Maker.create(process.env.NETWORK, {
   privateKey: process.env.PRIVATE_KEY,
-  log: false
+  log: false,
+  provider: {
+    infuraProjectId
+  }
 });
 
 module.exports = async (iterations, priceFloor, principal) => {

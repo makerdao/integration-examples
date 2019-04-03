@@ -1,4 +1,5 @@
 import Maker from '@makerdao/dai';
+const infuraProjectId = 'c3f0f26a4c1742e0949d8eedfc47be67'; //dai.js project id
 
 export const started = () => ({
   type: 'STARTED'
@@ -65,7 +66,10 @@ export const startAsync = () => async dispatch => {
   dispatch(started());
   const maker = Maker.create(process.env.REACT_APP_NETWORK, {
     privateKey: process.env.REACT_APP_PRIVATE_KEY,
-    overrideMetamask: true
+    overrideMetamask: true,
+    provider: {
+      infuraProjectId
+    }
   });
   console.log('maker:', maker);
   dispatch(makerCreated());

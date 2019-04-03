@@ -1,4 +1,5 @@
 const Maker = require('@makerdao/dai');
+const infuraProjectId = 'c3f0f26a4c1742e0949d8eedfc47be67'; //dai.js project id
 
 
 async function start(wyreWallet, amountToTransfer, accountPrivateKey) {
@@ -8,6 +9,9 @@ async function start(wyreWallet, amountToTransfer, accountPrivateKey) {
             privateKey: accountPrivateKey,
             web3: {
                 confirmedBlockCount: 15
+            },
+            provider: {
+                infuraProjectId
             }
         });
         await maker.authenticate();

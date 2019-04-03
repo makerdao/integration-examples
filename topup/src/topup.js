@@ -1,5 +1,6 @@
 const Maker = require('@makerdao/dai');
 const roundTo = require('round-to');
+const infuraProjectId = 'c3f0f26a4c1742e0949d8eedfc47be67'; //dai.js project id
 
 const MIN_ADD_AMOUNT = 0.0001;
 const ROUND_TO_PLACES = 4;
@@ -14,7 +15,10 @@ module.exports = async function(cdpId, options) {
 
   const maker = Maker.create(process.env.NETWORK, {
     privateKey: process.env.PRIVATE_KEY,
-    log: false
+    log: false,
+    provider: {
+      infuraProjectId
+    }
   });
   const cdp = await maker.getCdp(cdpId);
 
