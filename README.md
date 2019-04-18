@@ -2,6 +2,12 @@
   Dai.js Examples
 </h1>
 
+### other examples
+
+See the [Maker governance dashboard repo](https://github.com/makerdao/governance-dashboard) for an example of a production application that uses dai.js.
+The WIP [MCD CDP Portal](https://github.com/makerdao/mcd-cdp-portal) also uses dai.js.
+The examples in this repo are simple examples that use dai.js, but note that these examples are not updated very often.
+
 ### accounts
 
 Demo of multiple account support. See [README](https://github.com/makerdao/integration-examples/blob/master/accounts/README.md).
