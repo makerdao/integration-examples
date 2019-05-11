@@ -4,12 +4,11 @@
   "private": true,
   "dependencies": {
     "@makerdao/dai": "^0.15.3",
-    "@makerdao/dai-plugin-mcd": "^0.1.5",
+    "@makerdao/dai-plugin-mcd": "^0.1.6",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.0",
-    "rimble-ui": "^0.7.1",
-    "web3": "^1.0.0-beta.54"
+    "rimble-ui": "^0.7.1"
   },
   "scripts": {
     "start": "react-scripts start",
