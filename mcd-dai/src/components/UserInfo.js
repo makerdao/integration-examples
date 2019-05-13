@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Text } from 'rimble-ui';
+import { Flex, Card, Text, Loader, Button } from 'rimble-ui';
 import { ETH, COL1, MDAI } from '@makerdao/dai-plugin-mcd';
 import { requestTokens, approveProxyInCOl1, approveProxyInDai } from '../utils/web3';
 
@@ -12,6 +12,11 @@ class UserInfo extends React.Component {
         showFaucetButton: false,
         approveCOl1: false,
         approveDAI: false,
+        loadFaucet: false,
+        payBack: false,
+        lockCOL1: false,
+        approveWithdraw: false,
+        approveLock: false,
     }
 
     componentWillMount() {
@@ -38,26 +43,36 @@ class UserInfo extends React.Component {
 
     requestTokensFromFaucet = () => {
         requestTokens()
+        this.setState({ loadFaucet: true })
     }
 
     approveCOL1 = async () => {
+        this.setState({ approveLock: true })
         await approveProxyInCOl1()
+        setTimeout(() => {
+            this.setState({ approveLock: false })
+        }, 17000);
         this.setState({ approveCOl1: true })
     }
 
     lockCollateral = async () => {
-        // await approveProxyInCOl1()
+        this.setState({ lockCOL1: true })
         let maker = this.props.maker;
         let cdpManager = await maker.service('mcd:cdpManager');
         await cdpManager.openLockAndDraw('COL1-A', COL1(50), MDAI(1));
     }
 
     approveMDAI = async () => {
+        this.setState({ approveWithdraw: true })
         await approveProxyInDai();
-        this.setState({approveDAI: true})
+        setTimeout(() => {
+            this.setState({ approveWithdraw: false })
+        }, 17000)
+        this.setState({ approveDAI: true })
     }
 
     payBackCollateral = async () => {
+        this.setState({ payBack: true })
         let maker = this.props.maker;
         let cdpManager = maker.service('mcd:cdpManager');
         let proxy = await maker.currentProxy();
@@ -67,6 +82,7 @@ class UserInfo extends React.Component {
 
     render() {
         console.log(this.state)
+        let loadRequest = this.state.COL1 === '0.00 COL1' && this.state.loadFaucet ? true : false;
         return (
             <div>
                 <Card width={'420px'} mx={'auto'} px={4}>
@@ -82,49 +98,60 @@ class UserInfo extends React.Component {
                      </Text>
                     <Text>{this.props.maker.currentAddress()}</Text>
                     <Text> {this.state.ETH}</Text>
-                    <Text> {this.state.COL1}
-                        {
-                            this.state.showFaucetButton ?
-                                <span>  <button onClick={this.requestTokensFromFaucet}>Request COL1 from faucet</button></span> : ''
-                        }
-                    </Text>
-                    <Text> {this.state.MDAI}</Text>
+                    <Flex>
+                        <Text> {this.state.COL1}
+                            {
+                                this.state.showFaucetButton ?
+                                    <Button size='small' onClick={this.requestTokensFromFaucet}>{loadRequest ? <Loader color='white' /> : 'Request COL1 from faucet'}</Button> : ''
+                            }
+                        </Text>
+
+                    </Flex>
+
+                    <Flex>
+                        <Text> {this.state.MDAI} </Text>
+                    </Flex>
                 </Card>
 
-                {
+                {this.state.COL1 === '0.00 COL1' ? '' :
                     this.state.COL1 !== '0.00 COL1' && this.state.approveCOl1 === true
                         ?
-                        <button
+                        <Button size='small'
                             onClick={this.lockCollateral}
                         >
-                            Lock 50 COL1
-                        </button>
+                            {
+                                this.state.lockCOL1 === true && this.state.COL1 === '50.00 COL1' ? <Loader color='white' /> : 'Lock 50 COL1'
+                            }
+                        </Button>
                         :
                         this.state.COL1 === '0.00 COL1' && this.state.MDAI !== '0.00 MDAI' ? '' :
-                        <button
-                            onClick={this.approveCOL1}
-                        >
-                            Approve to lock COL1
-                        </button>
+                            <Button size='small'
+                                onClick={this.approveCOL1}
+                            >
+                                {
+                                    this.state.approveLock ? <Loader color='white' /> : 'Approve to lock COL1'
+                                }
+                            </Button>
 
-                }                
+                }
                 {
                     this.state.MDAI !== '0.00 MDAI' ?
-                    this.state.MDAI !== '0.00 MDAI' && this.state.approveDAI === false
-                        ?
-                        <button
-                            onClick={this.approveMDAI}
-                        >
-                            Approve to withdraw 
-                        </button>
-                        :
-                        
-                        <button
-                            onClick={this.payBackCollateral}
-                        >
-                            Pay Back 1 MDAI
-                        </button>
-                        :  ''
+                        this.state.MDAI !== '0.00 MDAI' && this.state.approveDAI === false
+                            ?
+                            <Button size='small'
+                                onClick={this.approveMDAI}
+                            >
+                                {
+                                    this.state.approveWithdraw ? <Loader color='white' /> : 'Approve to withdraw MDAI'
+                                }
+                            </Button>
+                            :
+                            <Button size='small'
+                                onClick={this.payBackCollateral}
+                            >   
+                                {this.state.MDAI === '1.00 MDAI' && this.state.payBack === true ? <Loader color='white' /> : 'Pay Back 1 MDAI'}
+                            </Button>
+                        : ''
                 }
             </div>
         )
