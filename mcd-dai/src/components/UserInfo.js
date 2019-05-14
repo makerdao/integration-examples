@@ -50,7 +50,7 @@ class UserInfo extends React.Component {
         await approveProxyInCOl1()
         setTimeout(() => {
             this.setState({ approveLock: false, approveCOL1: true })
-        }, 15000);
+        }, 20000);
     }
 
     lockCollateral = async () => {
@@ -65,7 +65,7 @@ class UserInfo extends React.Component {
         await approveProxyInDai();
         setTimeout(() => {
             this.setState({ approveWithdraw: false, approveDAI: true })
-        }, 15000)
+        }, 20000)
     }
 
     payBackCollateral = async () => {
@@ -143,7 +143,7 @@ class UserInfo extends React.Component {
                             :
                             <Button size='small'
                                 onClick={this.payBackCollateral}
-                            >   {console.log('payback MDAI', this.state.MDAI)}
+                            >
                                 {this.state.MDAI === '1.00 MDAI' && this.state.payBack === true ? <Loader color='white' /> : 'Pay Back 1 MDAI'}
                             </Button>
                         : ''
