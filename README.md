@@ -58,5 +58,9 @@ babel-node . 1234 -t 2.5 -v
 Use Dai.js along with the Wyre SDK for an easy fiat on or off ramp in your application.
 Uses version 1.0.5 of the Wyre API, which may need an upgrade soon.
 
+### mcd-dai
+Use the `dai-mcd-plugin` to interact with the Multi Collateral Dai smart contracts
+
+
 __Example Usage__
 See the project's README for detailed instructions
