@@ -10,7 +10,7 @@ class UserInfo extends React.Component {
         COL1: '0.00 COL1',
         MDAI: '0.00 MDAI',
         showFaucetButton: false,
-        approveCOl1: false,
+        approveCOL1: false,
         approveDAI: false,
         loadFaucet: false,
         payBack: false,
@@ -52,7 +52,7 @@ class UserInfo extends React.Component {
         setTimeout(() => {
             this.setState({ approveLock: false })
         }, 17000);
-        this.setState({ approveCOl1: true })
+        this.setState({ approveCOL1: true })
     }
 
     lockCollateral = async () => {
@@ -78,6 +78,7 @@ class UserInfo extends React.Component {
         let proxy = await maker.currentProxy();
         let cdps = await cdpManager.getCdpIds(proxy);
         await cdpManager.wipeAndFree(cdps[0].id, 'COL1-A', MDAI(1), COL1(50))
+        this.setState({approveCOL1: false, approveDAI: false, lockCOL1: false, payBack: false})
     }
 
     render() {
@@ -114,7 +115,7 @@ class UserInfo extends React.Component {
                 </Card>
 
                 {this.state.COL1 === '0.00 COL1' ? '' :
-                    this.state.COL1 !== '0.00 COL1' && this.state.approveCOl1 === true
+                    this.state.COL1 !== '0.00 COL1' && this.state.approveCOL1 === true
                         ?
                         <Button size='small'
                             onClick={this.lockCollateral}
@@ -135,8 +136,8 @@ class UserInfo extends React.Component {
 
                 }
                 {
-                    this.state.MDAI !== '0.00 MDAI' ?
-                        this.state.MDAI !== '0.00 MDAI' && this.state.approveDAI === false
+                    this.state.MDAI !== '0.00 MDAI' && true ? 
+                        this.state.MDAI !== '0.00 MDAI' && this.state.approveDAI === false && true
                             ?
                             <Button size='small'
                                 onClick={this.approveMDAI}
@@ -145,10 +146,11 @@ class UserInfo extends React.Component {
                                     this.state.approveWithdraw ? <Loader color='white' /> : 'Approve to withdraw MDAI'
                                 }
                             </Button>
+                            
                             :
                             <Button size='small'
                                 onClick={this.payBackCollateral}
-                            >   
+                            >   {console.log('payback MDAI',this.state.MDAI)}
                                 {this.state.MDAI === '1.00 MDAI' && this.state.payBack === true ? <Loader color='white' /> : 'Pay Back 1 MDAI'}
                             </Button>
                         : ''

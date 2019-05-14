@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@makerdao/dai": "^0.15.3",
+    "@makerdao/dai": "^0.16.0",
     "@makerdao/dai-plugin-mcd": "^0.1.6",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
