@@ -1,6 +1,6 @@
 import React from 'react';
 import { Flex, Card, Text, Loader, Button } from 'rimble-ui';
-import { ETH, COL1, MDAI } from '@makerdao/dai-plugin-mcd';
+import { COL1, MDAI } from '@makerdao/dai-plugin-mcd';
 import { requestTokens, approveProxyInCOl1, approveProxyInDai } from '../utils/web3';
 
 
@@ -36,7 +36,6 @@ class UserInfo extends React.Component {
 
     updateBalance = async () => {
         setInterval(async () => {
-            console.log('updating')
             this.displayBalances()
         }, 5000)
     }
@@ -50,9 +49,8 @@ class UserInfo extends React.Component {
         this.setState({ approveLock: true })
         await approveProxyInCOl1()
         setTimeout(() => {
-            this.setState({ approveLock: false })
-        }, 17000);
-        this.setState({ approveCOL1: true })
+            this.setState({ approveLock: false, approveCOL1: true })
+        }, 15000);
     }
 
     lockCollateral = async () => {
@@ -66,9 +64,8 @@ class UserInfo extends React.Component {
         this.setState({ approveWithdraw: true })
         await approveProxyInDai();
         setTimeout(() => {
-            this.setState({ approveWithdraw: false })
-        }, 17000)
-        this.setState({ approveDAI: true })
+            this.setState({ approveWithdraw: false, approveDAI: true })
+        }, 15000)
     }
 
     payBackCollateral = async () => {
@@ -78,11 +75,10 @@ class UserInfo extends React.Component {
         let proxy = await maker.currentProxy();
         let cdps = await cdpManager.getCdpIds(proxy);
         await cdpManager.wipeAndFree(cdps[0].id, 'COL1-A', MDAI(1), COL1(50))
-        this.setState({approveCOL1: false, approveDAI: false, lockCOL1: false, payBack: false})
+        this.setState({ approveCOL1: false, approveDAI: false, lockCOL1: false, payBack: false })
     }
 
     render() {
-        console.log(this.state)
         let loadRequest = this.state.COL1 === '0.00 COL1' && this.state.loadFaucet ? true : false;
         return (
             <div>
@@ -108,12 +104,10 @@ class UserInfo extends React.Component {
                         </Text>
 
                     </Flex>
-
                     <Flex>
                         <Text> {this.state.MDAI} </Text>
                     </Flex>
                 </Card>
-
                 {this.state.COL1 === '0.00 COL1' ? '' :
                     this.state.COL1 !== '0.00 COL1' && this.state.approveCOL1 === true
                         ?
@@ -136,7 +130,7 @@ class UserInfo extends React.Component {
 
                 }
                 {
-                    this.state.MDAI !== '0.00 MDAI' && true ? 
+                    this.state.MDAI !== '0.00 MDAI' && true ?
                         this.state.MDAI !== '0.00 MDAI' && this.state.approveDAI === false && true
                             ?
                             <Button size='small'
@@ -146,11 +140,10 @@ class UserInfo extends React.Component {
                                     this.state.approveWithdraw ? <Loader color='white' /> : 'Approve to withdraw MDAI'
                                 }
                             </Button>
-                            
                             :
                             <Button size='small'
                                 onClick={this.payBackCollateral}
-                            >   {console.log('payback MDAI',this.state.MDAI)}
+                            >   {console.log('payback MDAI', this.state.MDAI)}
                                 {this.state.MDAI === '1.00 MDAI' && this.state.payBack === true ? <Loader color='white' /> : 'Pay Back 1 MDAI'}
                             </Button>
                         : ''

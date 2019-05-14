@@ -2,7 +2,6 @@ import Maker from '@makerdao/dai';
 import McdPlugin, { ETH, COL1 } from '@makerdao/dai-plugin-mcd';
 import FaucetABI from './Faucet.json';
 import dsTokenAbi from './dsToken.abi.json';
-import { BigNumber } from 'ethers/utils';
 
 let maker = null;
 let web3 = null;
@@ -31,7 +30,6 @@ const connect = async () => {
 
 const getWeb3 = async () => {
     web3 = await maker.service('web3')._web3;
-    console.log('web3js', web3);
     return web3;
 }
 
@@ -81,7 +79,7 @@ const approveProxyInDai = async () => {
         let daiAddress = '0xA2e9a6Ed3835746AADBaD195d32d6442b2D7335a';
         const daiAbi = dsTokenAbi;
         const col1Contract = new web3.eth.Contract(daiAbi, daiAddress);
-        return new Promise (async (resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             await col1Contract.methods.approve(proxy, 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').send({ from: accounts[0] }, (error, result) => {
                 if (error) {
                     console.log('error in approving DAI token', error)
