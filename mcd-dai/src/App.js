@@ -1,7 +1,7 @@
 import React from 'react';
 import UserInfo from './components/UserInfo'
 import './App.css';
-import { MetaMaskButton } from 'rimble-ui'
+import { MetaMaskButton, Loader } from 'rimble-ui'
 import { connect, getWeb3 } from './utils/web3';
 
 
@@ -9,9 +9,11 @@ let maker = null;
 
 class App extends React.Component {
   state = {
-    maker: 'false'
+    maker: 'false',
+    load: false,
   }
   handleMetamask = async () => {
+    this.setState({load: true})
     maker = await connect()
     getWeb3()
     this.setState({ maker: true })
@@ -28,7 +30,7 @@ class App extends React.Component {
             <MetaMaskButton.outline
               onClick={this.handleMetamask}
             >
-              Connect With Metamask
+              {this.state.load ? <Loader color='black'/> :'Connect With Metamask'}
             </MetaMaskButton.outline>
           )
         }        
