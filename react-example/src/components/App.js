@@ -16,11 +16,11 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">MakerJS React Redux Example</h1>
+          <h1 className="App-title">Dai.js React/Redux Example</h1>
         </header>
           <br/>
           <StartButton/>
-          <br /><p className="App-intro"><strong>This application pulls in maker.js to open a cdp, lock eth, draw dai, repay the dai, and then shut the cdp.  Each transaction is sent after the other is mined.  Progress is reported below.  Click Start to begin.</strong></p><br />
+          <br /><p className="App-intro"><strong>This application uses Dai.js to open a CDP, lock ether, draw Dai, repay the Dai, and then shut the CDP.  Each transaction fires sequentially after you press 'Start,' and progress updates will appear below. Open the console to see more logging, and don't forget to set the necessary variables as described in the <a href="https://github.com/makerdao/integration-examples/blob/master/react-example/README.md" target="_blank" rel="noopener noreferrer">documentation</a>.</strong></p><br />
           <CreateMaker/>
           <OpenCdp/>
           <LockEth/>

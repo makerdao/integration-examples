@@ -30,12 +30,10 @@ export const cdpShut = () => ({
 });
 
 const drawDaiAsync = (maker, cdp) => async dispatch => {
-  const defaultAccount = maker
-    .service('token')
-    .get('web3')
-    .defaultAccount();
+  const defaultAccount = maker.service('web3').currentAddress();
   const dai = maker.service('token').getToken('DAI');
-  const txn = await cdp.drawDai(0.1);
+  const txn = cdp.drawDai(0.1);
+  await maker.service('transactionManager').confirm(txn);
   const balance = await dai.balanceOf(defaultAccount);
   console.log('Transaction from drawing Dai:', txn);
   console.log('Dai balance after drawing:', balance.toString());
@@ -43,10 +41,7 @@ const drawDaiAsync = (maker, cdp) => async dispatch => {
 };
 
 const wipeDebtAsync = (maker, cdp) => async dispatch => {
-  const defaultAccount = maker
-    .service('token')
-    .get('web3')
-    .defaultAccount();
+  const defaultAccount = maker.service('web3').currentAddress();
   const dai = maker.service('token').getToken('DAI');
   const txn = await cdp.wipeDai(0.1);
   const balance = await dai.balanceOf(defaultAccount);
@@ -64,13 +59,14 @@ const shutCdpAsync = cdp => async dispatch => {
 
 export const startAsync = () => async dispatch => {
   dispatch(started());
-  const maker = Maker.create(process.env.REACT_APP_NETWORK, {
+  const maker = await Maker.create(process.env.REACT_APP_NETWORK, {
     privateKey: process.env.REACT_APP_PRIVATE_KEY,
     overrideMetamask: true,
     provider: {
       infuraProjectId
     }
   });
+  await maker.authenticate();
   console.log('maker:', maker);
   dispatch(makerCreated());
   const cdp = await maker.openCdp();
