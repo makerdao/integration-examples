@@ -1,5 +1,5 @@
 import Maker from '@makerdao/dai';
-import McdPlugin, { ETH, COL1 } from '@makerdao/dai-plugin-mcd';
+import McdPlugin, { ETH, REP } from '@makerdao/dai-plugin-mcd';
 import FaucetABI from './Faucet.json';
 import dsTokenAbi from './dsToken.abi.json';
 
@@ -15,7 +15,7 @@ const connect = async () => {
                     network: 'kovan',
                     cdpTypes: [
                         { currency: ETH, ilk: 'ETH-A' },
-                        { currency: COL1, ilk: 'COL1-A' },
+                        { currency: REP, ilk: 'REP-A' },
                     ]
                 }
             ]
@@ -37,11 +37,11 @@ const requestTokens = async () => {
     try {
         console.log('trying to call function gulp in faucet')
         let accounts = await web3.eth.getAccounts()
-        let col1 = '0xc644e83399f3c0b4011d3dd3c61bc8b1617253e5'
+        let REP = '0xc7aa227823789e363f29679f23f7e8f6d9904a9b'
         const faucetABI = FaucetABI;
-        const faucetAddress = '0xa402e771a4662dcbe661e839a6e8c294d2ce44cf'
+        const faucetAddress = '0x94598157fcf0715c3bc9b4a35450cce82ac57b20'
         const faucetContract = new web3.eth.Contract(faucetABI, faucetAddress);
-        await faucetContract.methods.gulp(col1).send({ from: accounts[0] }, (error, result) => console.log(error))
+        await faucetContract.methods.gulp(REP).send({ from: accounts[0] }, (error, result) => console.log(error))
 
 
     } catch (error) {
@@ -49,20 +49,20 @@ const requestTokens = async () => {
     }
 }
 
-const approveProxyInCOl1 = async () => {
+const approveProxyInREP = async () => {
     try {
         let accounts = await web3.eth.getAccounts();
         let proxy = await maker.currentProxy();
-        let col1Address = '0xc644e83399f3c0b4011d3dd3c61bc8b1617253e5'
-        const col1Abi = dsTokenAbi;
-        const col1Contract = new web3.eth.Contract(col1Abi, col1Address);
+        let REPAddress = '0xc7aa227823789e363f29679f23f7e8f6d9904a9b'
+        const REPAbi = dsTokenAbi;
+        const REPContract = new web3.eth.Contract(REPAbi, REPAddress);
         return new Promise(async (resolve, reject) => {
-            await col1Contract.methods.approve(proxy, 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').send({ from: accounts[0] }, (error, result) => {
+            await REPContract.methods.approve(proxy, 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').send({ from: accounts[0] }, (error, result) => {
                 if (error) {
-                    console.log('error in approving col1 token', error)
+                    console.log('error in approving REP token', error)
                     reject(error)
                 }
-                console.log('result in approving col1 token', result)
+                console.log('result in approving REP token', result)
                 resolve(result)
             })
 
@@ -76,11 +76,11 @@ const approveProxyInDai = async () => {
     try {
         let accounts = await web3.eth.getAccounts();
         let proxy = await maker.currentProxy();
-        let daiAddress = '0xA2e9a6Ed3835746AADBaD195d32d6442b2D7335a';
+        let daiAddress = '0x1f9beaf12d8db1e50ea8a5ed53fb970462386aa0';
         const daiAbi = dsTokenAbi;
-        const col1Contract = new web3.eth.Contract(daiAbi, daiAddress);
+        const REPContract = new web3.eth.Contract(daiAbi, daiAddress);
         return new Promise(async (resolve, reject) => {
-            await col1Contract.methods.approve(proxy, 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').send({ from: accounts[0] }, (error, result) => {
+            await REPContract.methods.approve(proxy, 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').send({ from: accounts[0] }, (error, result) => {
                 if (error) {
                     console.log('error in approving DAI token', error)
                     reject(error);
@@ -102,6 +102,6 @@ export {
     requestTokens,
     getWeb3,
     connect,
-    approveProxyInCOl1,
+    approveProxyInREP,
     approveProxyInDai
 };
