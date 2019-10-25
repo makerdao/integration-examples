@@ -47,7 +47,7 @@ module.exports = async (iterations, priceFloor, principal) => {
 
   log.action('opening CDP...');
   const cdp = await maker.openCdp();
-  const id = await cdp.getId();
+  const id = await cdp.id;
   log.state(`CDP ID: ${id}`);
 
   // calculate a collateralization ratio that will achieve the given price floor

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Flex, Card, Text, Loader, Button } from 'rimble-ui';
 import { REP, MDAI } from '@makerdao/dai-plugin-mcd';
-import { requestTokens, approveProxyInREP, approveProxyInDai } from '../utils/web3';
+import { requestTokens, approveProxyInREP, approveProxyInDai, leverage } from '../utils/web3';
 
 
 class UserInfo extends React.Component {
@@ -19,7 +19,7 @@ class UserInfo extends React.Component {
         approveLock: false,
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.displayBalances();
         this.updateBalance();
     }
@@ -76,6 +76,10 @@ class UserInfo extends React.Component {
         let cdps = await cdpManager.getCdpIds(proxy);
         await cdpManager.wipeAndFree(cdps[0].id, 'REP-A', MDAI(10), REP(50))
         this.setState({ approveREP: false, approveDAI: false, lockREP: false, payBack: false })
+    }
+
+    leverage = () => {
+        leverage()
     }
 
     render() {
@@ -148,6 +152,10 @@ class UserInfo extends React.Component {
                             </Button>
                         : ''
                 }
+                <hr />
+                <div>
+                    <Button onClick={this.leverage} size="small">Try Leverage 1 400 0.1</Button>
+                </div>
             </div>
         )
     }
