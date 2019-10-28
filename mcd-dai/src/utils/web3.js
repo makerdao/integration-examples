@@ -105,7 +105,7 @@ const log = {
     title: debug('leverage:header')
 };
 
-const leverage = async (iterations = 1, priceFloor = 160, principal = 0.1) => {
+const leverage = async (iterations = 1, priceFloor = 200, principal = 0.1) => {
     const liquidationRatio = await maker.service('cdp').getLiquidationRatio();
     const priceEth = (await maker.service('price').getEthPrice()).toNumber();
 

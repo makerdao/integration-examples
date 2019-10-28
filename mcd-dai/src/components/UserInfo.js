@@ -154,7 +154,7 @@ class UserInfo extends React.Component {
                 }
                 <hr />
                 <div>
-                    <Button onClick={this.leverage} size="small">Try Leverage 1 400 0.1</Button>
+                    <Button onClick={this.leverage} size="small">Try Leverage 1 200 0.1</Button>
                 </div>
             </div>
         )
