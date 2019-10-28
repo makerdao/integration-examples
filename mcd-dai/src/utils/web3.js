@@ -2,7 +2,7 @@ import Maker from '@makerdao/dai';
 import McdPlugin, { ETH, REP } from '@makerdao/dai-plugin-mcd';
 import FaucetABI from './Faucet.json';
 import dsTokenAbi from './dsToken.abi.json';
-import MakerOtc from '@makerdao/dai-plugin-eth2dai-direct';
+import MakerOtc from '@makerdao/dai-plugin-eth2dai-instant';
 import debug from 'debug';
 
 let maker = null;

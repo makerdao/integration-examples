@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@makerdao/dai": "0.18.8",
-    "@makerdao/dai-plugin-eth2dai-direct": "0.1.0",
+    "@makerdao/dai-plugin-eth2dai-instant": "^0.1.4",
     "@makerdao/dai-plugin-mcd": "0.2.14-2",
     "debug": "^4.1.1",
     "react": "^16.8.6",
