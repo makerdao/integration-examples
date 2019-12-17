@@ -1,20 +1,20 @@
 import React from 'react';
-import { Flex, Card, Text, Loader, Button } from 'rimble-ui';
-import { REP, MDAI } from '@makerdao/dai-plugin-mcd';
-import { requestTokens, approveProxyInREP, approveProxyInDai } from '../utils/web3';
+import { Flex, Card, Text, Loader, Button, Pill } from 'rimble-ui';
+import { BAT, MDAI } from '@makerdao/dai-plugin-mcd';
+import { requestTokens, approveProxyInBAT, approveProxyInDai } from '../utils/web3';
 
 
 class UserInfo extends React.Component {
     state = {
         ETH: '',
-        REP: '0.00 REP',
+        BAT: '0.00 BAT',
         MDAI: '0.00 MDAI',
         showFaucetButton: false,
-        approveREP: false,
+        approveBAT: false,
         approveDAI: false,
         loadFaucet: false,
         payBack: false,
-        lockREP: false,
+        lockBAT: false,
         approveWithdraw: false,
         approveLock: false,
     }
@@ -28,10 +28,10 @@ class UserInfo extends React.Component {
     displayBalances = async () => {
         let maker = this.props.maker;
         let ethBalance = await maker.getToken('ETH').balanceOf(maker.currentAddress())
-        let REPBalance = await maker.getToken('REP').balanceOf(maker.currentAddress());
+        let BATBalance = await maker.getToken('BAT').balanceOf(maker.currentAddress());
         let MDAIBalance = await maker.getToken('MDAI').balanceOf(maker.currentAddress());
-        let showFaucetButton = REPBalance.toString() === '0.00 REP' && MDAIBalance.toString() === '0.00 MDAI' ? true : false;
-        this.setState({ ETH: ethBalance.toString(), REP: REPBalance.toString(), MDAI: MDAIBalance.toString(), showFaucetButton });
+        let showFaucetButton = BATBalance.toString() === '0.00 BAT' && MDAIBalance.toString() === '0.00 MDAI' ? true : false;
+        this.setState({ ETH: ethBalance.toString(), BAT: BATBalance.toString(), MDAI: MDAIBalance.toString(), showFaucetButton });
     }
 
     updateBalance = async () => {
@@ -45,19 +45,19 @@ class UserInfo extends React.Component {
         this.setState({ loadFaucet: true })
     }
 
-    approveREP = async () => {
+    approveBAT = async () => {
         this.setState({ approveLock: true })
-        await approveProxyInREP()
+        await approveProxyInBAT()
         setTimeout(() => {
-            this.setState({ approveLock: false, approveREP: true })
+            this.setState({ approveLock: false, approveBAT: true })
         }, 20000);
     }
 
     lockCollateral = async () => {
-        this.setState({ lockREP: true })
+        this.setState({ lockBAT: true })
         let maker = this.props.maker;
         let cdpManager = await maker.service('mcd:cdpManager');
-        await cdpManager.openLockAndDraw('REP-A', REP(50), MDAI(10));
+        await cdpManager.openLockAndDraw('BAT-A', BAT(150), MDAI(20));
     }
 
     approveMDAI = async () => {
@@ -74,12 +74,12 @@ class UserInfo extends React.Component {
         let cdpManager = maker.service('mcd:cdpManager');
         let proxy = await maker.currentProxy();
         let cdps = await cdpManager.getCdpIds(proxy);
-        await cdpManager.wipeAndFree(cdps[0].id, 'REP-A', MDAI(10), REP(50))
-        this.setState({ approveREP: false, approveDAI: false, lockREP: false, payBack: false })
+        await cdpManager.wipeAndFree(cdps[0].id, 'BAT-A', MDAI(20), BAT(150))
+        this.setState({ approveBAT: false, approveDAI: false, lockBAT: false, payBack: false })
     }
 
     render() {
-        let loadRequest = this.state.REP === '0.00 REP' && this.state.loadFaucet ? true : false;
+        let loadRequest = this.state.BAT === '0.00 BAT' && this.state.loadFaucet ? true : false;
         return (
             <div>
                 <Card width={'420px'} mx={'auto'} px={4}>
@@ -96,10 +96,10 @@ class UserInfo extends React.Component {
                     <Text>{this.props.maker.currentAddress()}</Text>
                     <Text> {this.state.ETH}</Text>
                     <Flex>
-                        <Text> {this.state.REP}
+                        <Text> {this.state.BAT}
                             {
                                 this.state.showFaucetButton ?
-                                    <Button size='small' onClick={this.requestTokensFromFaucet}>{loadRequest ? <Loader color='white' /> : 'Request REP from faucet'}</Button> : ''
+                                    <Button size='small' onClick={this.requestTokensFromFaucet}>{loadRequest ? <Loader color='white' /> : 'Request BAT from faucet'}</Button> : ''
                             }
                         </Text>
 
@@ -108,25 +108,27 @@ class UserInfo extends React.Component {
                         <Text> {this.state.MDAI} </Text>
                     </Flex>
                 </Card>
-                {this.state.REP === '0.00 REP' ? '' :
-                    this.state.REP !== '0.00 REP' && this.state.approveREP === true
-                        ?
-                        <Button size='small'
-                            onClick={this.lockCollateral}
-                        >
-                            {
-                                this.state.lockREP === true && this.state.REP === '50.00 REP' ? <Loader color='white' /> : 'Lock 50 REP and Draw 10 Dai'
-                            }
-                        </Button>
-                        :
-                        this.state.REP === '0.00 REP' && this.state.MDAI !== '0.00 MDAI' ? '' :
+                {this.state.BAT === '0.00 BAT' ? '' :
+                    this.state.BAT !== '150.00 BAT' ? <Pill color='red'>Acquire 150 BAT</Pill> :
+                        (this.state.BAT === '150.00 BAT' && this.state.approveBAT === true
+                            ?
                             <Button size='small'
-                                onClick={this.approveREP}
+                                onClick={this.lockCollateral}
                             >
                                 {
-                                    this.state.approveLock ? <Loader color='white' /> : 'Approve to lock REP'
+                                    this.state.lockBAT === true && this.state.BAT === '150.00 BAT' ? <Loader color='white' /> : 'Lock 150 BAT and Draw 20 Dai'
                                 }
                             </Button>
+                            :
+                            this.state.BAT === '0.00 BAT' && this.state.MDAI !== '0.00 MDAI' ? '' :
+                                <Button size='small'
+                                    onClick={this.approveBAT}
+                                >
+                                    {
+                                        this.state.approveLock ? <Loader color='white' /> : 'Approve to lock BAT'
+                                    }
+                                </Button>
+                        )
 
                 }
                 {
@@ -144,7 +146,7 @@ class UserInfo extends React.Component {
                             <Button size='small'
                                 onClick={this.payBackCollateral}
                             >
-                                {this.state.MDAI === '10.00 MDAI' && this.state.payBack === true ? <Loader color='white' /> : 'Pay Back 10 MDAI'}
+                                {this.state.MDAI === '20.00 MDAI' && this.state.payBack === true ? <Loader color='white' /> : 'Pay Back 20 MDAI'}
                             </Button>
                         : ''
                 }
