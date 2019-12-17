@@ -4,9 +4,9 @@ This example uses the the [dai-mcd-plugin](https://github.com/makerdao/dai.js/tr
 
 
 In this example you can: 
-- Request kovan REP token from faucet to interact with MCD system
-- Lock REP token in the CDP and receive MDAI
-- Payback MDAI and withdraw REP token from CDP   
+- Request kovan BAT token from faucet to interact with MCD system
+- Lock BAT token in the Vault and receive MDAI
+- Payback MDAI and withdraw BAT token from Vault   
 
 ### Prerequisites
  - Have Metamask in your browser
