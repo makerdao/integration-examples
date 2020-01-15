@@ -5,6 +5,8 @@
   "dependencies": {
     "@makerdao/dai": "0.23.0-rc.4",
     "@makerdao/dai-plugin-mcd": "^1.0.4",
+    "@makerdao/dai-plugin-eth2dai-instant": "^0.1.4",
+    "debug": "^4.1.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.0",
