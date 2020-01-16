@@ -2,8 +2,8 @@ import Maker from '@makerdao/dai';
 import McdPlugin, { ETH, BAT } from '@makerdao/dai-plugin-mcd';
 import FaucetABI from './Faucet.json';
 import dsTokenAbi from './dsToken.abi.json';
-import MakerOtc from '@makerdao/dai-plugin-eth2dai-instant';
-import debug from 'debug';
+// import MakerOtc from '@makerdao/dai-plugin-eth2dai-instant';
+import MakerOtc from '@makerdao/dai-plugin-eth2dai-direct';
 
 let maker = null;
 let web3 = null;
@@ -27,6 +27,7 @@ const connect = async () => {
     await maker.service('proxy').ensureProxy();
     let exchange = await maker.service('exchange')
     console.log('exchange service: ', exchange)
+    console.log('maker', maker)
     return maker;
 }
 
@@ -99,13 +100,7 @@ const approveProxyInDai = async () => {
 
 }
 
-const log = {
-    state: debug('leverage:state'),
-    action: debug('leverage:action'),
-    title: debug('leverage:header')
-};
-
-const leverage = async (iterations = 1, priceFloor = 200, principal = 0.1) => {
+const leverage = async (iterations = 1, priceFloor = 200, principal = 1) => {
     const liquidationRatio = await maker.service('cdp').getLiquidationRatio();
     const priceEth = (await maker.service('price').getEthPrice()).toNumber();
 
@@ -139,7 +134,7 @@ const leverage = async (iterations = 1, priceFloor = 200, principal = 0.1) => {
     // do `iterations` round trip(s) to the exchange
     for (let i = 0; i < iterations; i++) {
         // exchange the drawn Dai for W-ETH
-        let tx = await maker.service('exchange').sell('DAI', 'ETH', drawAmt);
+        let tx = await maker.service('exchange').sellDai(drawAmt, 'WETH', '0.30');
 
         // observe the amount of W-ETH received from the exchange
         // by calling `fillAmount` on the returned transaction object
@@ -177,7 +172,11 @@ const leverage = async (iterations = 1, priceFloor = 200, principal = 0.1) => {
     console.log(`Created CDP: ${JSON.stringify(cdpState)}`);
 }
 
-
+const sell5Dai = async () => {
+    console.log('exchange service', maker.service('exchange'))
+    let tx = await maker.service('exchange').sell('ETH', 'DAI', 0.3);
+    console.log('Seeling 5 Dai', tx)
+}
 
 export {
     requestTokens,
@@ -185,5 +184,6 @@ export {
     connect,
     approveProxyInBAT,
     approveProxyInDai,
-    leverage
+    leverage,
+    sell5Dai
 };
