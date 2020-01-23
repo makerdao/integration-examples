@@ -6,9 +6,9 @@ import { approveProxyInDai } from '../utils/web3';
 
 class DsrDemo extends React.Component {
     state = {
-        approveDAI: false,
-        dsrJoined: false,
-        dsrExit: false,
+        ETH: "0.00 ETH",
+        MDAI: "0.00 MDAI",
+        DSR: "0.00 MDAI",
     }
 
     componentWillMount() {
@@ -33,15 +33,10 @@ class DsrDemo extends React.Component {
     }
     
     approveMDAI = async () => {
-        this.setState({ approveWithdraw: true })
         await approveProxyInDai();
-        setTimeout(() => {
-            this.setState({ approveWithdraw: false, approveDAI: true })
-        }, 20000)
     }
 
     joinDsr = async () => {
-        this.setState({ dsrJoined: true })
         let maker = this.props.maker;
         let dsrManager = await maker.service('mcd:savings')
         await dsrManager.join(MDAI(1));
@@ -54,7 +49,6 @@ class DsrDemo extends React.Component {
     }
 
     exitAllDsr = async () => {
-        this.setState({ dsrdsrExit: true })
         let maker = this.props.maker;
         let dsrManager = await maker.service('mcd:savings')
         await dsrManager.exitAll();

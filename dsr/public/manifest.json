@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "DSR Demo",
+  "name": "Dai Savings Rate Integration Example",
   "icons": [
     {
       "src": "favicon.ico",
