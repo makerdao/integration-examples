@@ -1,7 +1,7 @@
 import React from 'react';
 import { Flex, Card, Text, Loader, Button, Pill } from 'rimble-ui';
 import { BAT, MDAI } from '@makerdao/dai-plugin-mcd';
-import { requestTokens, approveProxyInBAT, approveProxyInDai, leverage, sell5Dai } from '../utils/web3';
+import { requestTokens, approveProxyInBAT, approveProxyInDai, leverage, sell5Dai, buyDai } from '../utils/web3';
 
 class UserInfo extends React.Component {
     state = {
@@ -159,7 +159,10 @@ class UserInfo extends React.Component {
                 </div>
                 <hr />
                 <div>
-                    <Button onClick={sell5Dai}>Sell 5 Dai</Button>
+                    <Button onClick={sell5Dai} size='small'>Sell 5 Dai</Button>
+                </div>
+                <div style={{margin: '5px'}}>
+                    <Button onClick={buyDai} size='small'>Buy 5 Dai</Button>
                 </div>
             </div>
         )

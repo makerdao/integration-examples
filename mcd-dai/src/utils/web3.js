@@ -2,12 +2,11 @@ import Maker from '@makerdao/dai';
 import McdPlugin, { ETH, BAT } from '@makerdao/dai-plugin-mcd';
 import FaucetABI from './Faucet.json';
 import dsTokenAbi from './dsToken.abi.json';
-// import MakerOtc from '@makerdao/dai-plugin-eth2dai-instant';
-import MakerOtc from '@makerdao/dai-plugin-eth2dai-direct';
+import MakerOtc from 'dai-plugin-maker-otc'
 
 let maker = null;
 let web3 = null;
-
+// let MakerOtc = null;
 const connect = async () => {
     maker = await Maker.create('browser', {
         plugins: [MakerOtc,
@@ -25,9 +24,7 @@ const connect = async () => {
     });
     await maker.authenticate();
     await maker.service('proxy').ensureProxy();
-    let exchange = await maker.service('exchange')
-    console.log('exchange service: ', exchange)
-    console.log('maker', maker)
+    await maker.service('exchange')
     return maker;
 }
 
@@ -100,67 +97,69 @@ const approveProxyInDai = async () => {
 
 }
 
-const leverage = async (iterations = 1, priceFloor = 200, principal = 1) => {
-    const liquidationRatio = await maker.service('cdp').getLiquidationRatio();
-    const priceEth = (await maker.service('price').getEthPrice()).toNumber();
-
+const leverage = async (iterations = 2, priceFloor = 175, principal = 0.25) => {
+    const cdpManager = maker.service('mcd:cdpManager');
+    console.log('cdpManager', cdpManager)
+    const cdpType = maker.service('mcd:cdpType');
+    console.log('cdpType', cdpType)
+    const liquidationRatioString = await cdpType.cdpTypes[0].liquidationRatio;
+    const liquidationRatio = liquidationRatioString.toNumber()
+    const priceEth = await cdpType.cdpTypes[0].price.toNumber()
     console.log(`Liquidation ratio: ${liquidationRatio}`);
     console.log(`Current price of ETH: ${priceEth}`);
 
+    // const cdp = await cdpManager.getCdp(642)
+    // console.log(cdp)
+    // console.log('Collateral Amount: ', cdp.collateralAmount.toNumber())
+    // console.log('Collateral Value: ', cdp.collateralValue.toNumber())
+    // console.log('Debt: ', cdp.debtValue.toNumber())
     console.log('opening CDP...');
-    const cdp = await maker.openCdp();
-    const id = await cdp.id;
+    let cdp = await cdpManager.open('ETH-A', { cache: false })
+    console.log('CDP, ', cdp)
+    const id = cdp.id
     console.log(`CDP ID: ${id}`);
+
 
     // calculate a collateralization ratio that will achieve the given price floor
     const collatRatio = priceEth * liquidationRatio / priceFloor;
     console.log(`Target ratio: ${collatRatio}`);
 
-    // lock up all of our principal
-    await cdp.lockEth(principal);
-    console.log(`locked ${principal} ETH`);
-
-    //get initial peth collateral
-    const initialPethCollateral = await cdp.getCollateralValue(Maker.PETH);
-    console.log(`${principal} ETH is worth ${initialPethCollateral}`);
-
     // calculate how much Dai we need to draw in order
     // to achieve the desired collateralization ratio
     let drawAmt = Math.floor(principal * priceEth / collatRatio);
-    await cdp.drawDai(drawAmt);
+    console.log('Drawing: ', drawAmt)
+    await cdpManager.lockAndDraw(id, cdp.ilk, ETH(principal), drawAmt);
     console.log(`drew ${drawAmt} Dai`);
-
 
     // do `iterations` round trip(s) to the exchange
     for (let i = 0; i < iterations; i++) {
         // exchange the drawn Dai for W-ETH
-        let tx = await maker.service('exchange').sellDai(drawAmt, 'WETH', '0.30');
-
+        let tx = await maker.service('exchange').sellDai(drawAmt, 'WETH', '0.03');
+        console.log(`Selling ${drawAmt} Dai`, tx)
         // observe the amount of W-ETH received from the exchange
         // by calling `fillAmount` on the returned transaction object
-        let returnedWeth = tx.fillAmount();
+        let returnedWeth = tx.fillAmount() / 10 ** 18;
         console.log(`exchanged ${drawAmt} Dai for ${returnedWeth}`);
 
-        // lock all of the W-ETH we just received into our CDP
-        await cdp.lockWeth(returnedWeth);
-        console.log(`locked ${returnedWeth}`);
-
         // calculate how much Dai we need to draw in order to
+        // lock all of the W-ETH we just received into our CDP
         // re-attain our desired collateralization ratio
-        drawAmt = Math.floor(returnedWeth.toNumber() * priceEth / collatRatio);
-        await cdp.drawDai(drawAmt);
+        drawAmt = Math.floor(returnedWeth * priceEth / collatRatio);
+        await cdpManager.lockAndDraw(id, cdp.ilk, ETH(returnedWeth), drawAmt);
+        console.log(`locked ${returnedWeth}`);
         console.log(`drew ${drawAmt} Dai`);
     }
 
     // get the final state of our CDP
-    const [pethCollateral, debt] = await Promise.all([
-        cdp.getCollateralValue(Maker.PETH),
-        cdp.getDebtValue()
-    ]);
+    cdp = await cdpManager.getCdp(id, { cache: false });
+    const collateralAmount = cdp.collateralAmount.toNumber();
+    const collateralValue = cdp.collateralValue.toNumber();
+    const debt = cdp.debtValue.toNumber();
+
 
     const cdpState = {
-        initialPethCollateral,
-        pethCollateral,
+        collateralValue,
+        collateralAmount,
         debt,
         id,
         principal,
@@ -173,9 +172,15 @@ const leverage = async (iterations = 1, priceFloor = 200, principal = 1) => {
 }
 
 const sell5Dai = async () => {
-    console.log('exchange service', maker.service('exchange'))
-    let tx = await maker.service('exchange').sell('ETH', 'DAI', 0.3);
+    let tx = await maker.service('exchange').sellDai('5', 'WETH', '0.001');
     console.log('Seeling 5 Dai', tx)
+    console.log('Seeling 5 Dai', tx.fillAmount())
+}
+
+const buyDai = async () => {
+    let tx = await maker.service('exchange').buyDai('5', 'WETH', '0.001');
+    console.log('Buying 5 Dai', tx)
+    console.log('Buying 5 Dai', tx.fillAmount())
 }
 
 export {
@@ -185,5 +190,6 @@ export {
     approveProxyInBAT,
     approveProxyInDai,
     leverage,
-    sell5Dai
+    sell5Dai,
+    buyDai
 };
