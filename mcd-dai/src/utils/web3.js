@@ -2,14 +2,14 @@ import Maker from '@makerdao/dai';
 import McdPlugin, { ETH, BAT } from '@makerdao/dai-plugin-mcd';
 import FaucetABI from './Faucet.json';
 import dsTokenAbi from './dsToken.abi.json';
-import MakerOtc from 'dai-plugin-maker-otc'
+//import MakerOtc from 'dai-plugin-maker-otc'
 
 let maker = null;
 let web3 = null;
 // let MakerOtc = null;
 const connect = async () => {
     maker = await Maker.create('browser', {
-        plugins: [MakerOtc,
+        plugins: [//MakerOtc,
             [
                 McdPlugin,
                 {
@@ -24,7 +24,7 @@ const connect = async () => {
     });
     await maker.authenticate();
     await maker.service('proxy').ensureProxy();
-    await maker.service('exchange')
+    //await maker.service('exchange')
     return maker;
 }
 
