@@ -2,26 +2,107 @@ import Maker from '@makerdao/dai';
 import McdPlugin, { ETH, BAT } from '@makerdao/dai-plugin-mcd';
 import FaucetABI from './Faucet.json';
 import dsTokenAbi from './dsToken.abi.json';
+import rinkebyAddresses from '../references/contracts/rinkeby.json'
+import goerliAddresses from '../references/contracts/goerli';
+import ropstenAddresses from '../references/contracts/ropsten';
 //import MakerOtc from 'dai-plugin-maker-otc'
 
 let maker = null;
 let web3 = null;
 // let MakerOtc = null;
-const connect = async () => {
-    maker = await Maker.create('browser', {
-        plugins: [//MakerOtc,
-            [
-                McdPlugin,
-                {
-                    network: 'kovan',
-                    cdpTypes: [
-                        { currency: ETH, ilk: 'ETH-A' },
-                        { currency: BAT, ilk: 'BAT-A' },
-                    ]
-                }
-            ]
-        ]
-    });
+
+
+let networkId = window.ethereum.networkVersion
+let contractAddresses = {}
+
+
+const outputAddresses = (networkId) => {
+    switch (Number(networkId)) {
+        case 3:
+            contractAddresses = ropstenAddresses
+            break;
+        case 4:
+            contractAddresses = rinkebyAddresses
+            break;
+        case 5:
+            contractAddresses = goerliAddresses
+            break;
+        default:
+            return contractAddresses;
+    }
+    return contractAddresses
+}
+
+const otherNetworksOverrides = [
+    {
+        network: 'rinkeby',
+        contracts: rinkebyAddresses
+    },
+    { network: 'goerli', contracts: goerliAddresses },
+    { network: 'ropsten', contracts: ropstenAddresses }
+].reduce((acc, { network, contracts }) => {
+    for (const [contractName, contractAddress] of Object.entries(contracts)) {
+        if (!acc[contractName]) acc[contractName] = {};
+        acc[contractName][network] = contractAddress;
+    }
+    return acc;
+}, {});
+
+const cdpTypes = [
+    { currency: ETH, ilk: 'ETH-A' },
+    { currency: BAT, ilk: 'BAT-A' }
+];
+
+const defineNetwork = (networkId) => {
+    let network = {
+        network: ''
+    }
+    switch (Number(networkId)) {
+        case 3:
+            network.network = 'ropsten'
+            break;
+        case 4:
+            network.network = 'rinkeby'
+            break;
+        case 42:
+            network.network = 'kovan'
+            break;
+        case 5:
+            network.network = 'goerli'
+            break;
+        default:
+            return network;
+    }
+
+    return network
+}
+
+const connect = async (networkId) => {
+    let networkNumber = await networkId;
+    let network = defineNetwork(networkNumber);
+    console.log('network object', network);
+    const addressOverrides = ['rinkeby', 'ropsten', 'goerli'].some(
+        networkName => networkName === network.network
+    )
+        ? otherNetworksOverrides
+        : {};
+
+    const mcdPluginConfig = {
+        cdpTypes,
+        addressOverrides
+    };
+
+    const config = {
+        plugins: [
+            [McdPlugin, mcdPluginConfig]
+        ],
+        smartContract: {
+            addressOverrides
+        },
+    };
+    outputAddresses(networkId)
+    console.log('Contract Addresses', contractAddresses);
+    maker = await Maker.create('browser', config);
     await maker.authenticate();
     await maker.service('proxy').ensureProxy();
     //await maker.service('exchange')
@@ -31,6 +112,7 @@ const connect = async () => {
 
 const getWeb3 = async () => {
     web3 = await maker.service('web3')._web3;
+    console.log('web3', await web3.eth.net.getNetworkType());
     return web3;
 }
 
@@ -38,9 +120,9 @@ const requestTokens = async () => {
     try {
         console.log('trying to call function gulp in faucet')
         let accounts = await web3.eth.getAccounts()
-        let BAT = '0x9f8cfb61d3b2af62864408dd703f9c3beb55dff7'
+        let BAT = contractAddresses.BAT
         const faucetABI = FaucetABI;
-        const faucetAddress = '0x94598157fcf0715c3bc9b4a35450cce82ac57b20'
+        const faucetAddress = contractAddresses.FAUCET
         const faucetContract = new web3.eth.Contract(faucetABI, faucetAddress);
         await faucetContract.methods.gulp(BAT).send({ from: accounts[0] }, (error, result) => console.log(error))
 
@@ -54,7 +136,7 @@ const approveProxyInBAT = async () => {
     try {
         let accounts = await web3.eth.getAccounts();
         let proxy = await maker.currentProxy();
-        let BATAddress = '0x9f8cfb61d3b2af62864408dd703f9c3beb55dff7'
+        let BATAddress = contractAddresses.BAT
         const BATAbi = dsTokenAbi;
         const BATContract = new web3.eth.Contract(BATAbi, BATAddress);
         return new Promise(async (resolve, reject) => {
@@ -77,7 +159,7 @@ const approveProxyInDai = async () => {
     try {
         let accounts = await web3.eth.getAccounts();
         let proxy = await maker.currentProxy();
-        let daiAddress = '0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa';
+        let daiAddress = contractAddresses.MCD_DAI
         const daiAbi = dsTokenAbi;
         const DAIContract = new web3.eth.Contract(daiAbi, daiAddress);
         return new Promise(async (resolve, reject) => {
@@ -191,5 +273,6 @@ export {
     approveProxyInDai,
     leverage,
     sell5Dai,
-    buyDai
+    buyDai,
+    defineNetwork
 };

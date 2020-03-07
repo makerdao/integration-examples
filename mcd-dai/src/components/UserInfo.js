@@ -1,7 +1,7 @@
 import React from 'react';
 import { Flex, Card, Text, Loader, Button, Pill } from 'rimble-ui';
 import { BAT, MDAI } from '@makerdao/dai-plugin-mcd';
-import { requestTokens, approveProxyInBAT, approveProxyInDai, leverage, sell5Dai, buyDai } from '../utils/web3';
+import { requestTokens, approveProxyInBAT, approveProxyInDai, leverage, sell5Dai, buyDai, defineNetwork } from '../utils/web3';
 
 class UserInfo extends React.Component {
     state = {
@@ -16,21 +16,29 @@ class UserInfo extends React.Component {
         lockBAT: false,
         approveWithdraw: false,
         approveLock: false,
+        network: ''
     }
 
     UNSAFE_componentWillMount() {
         this.displayBalances();
         this.updateBalance();
+        let networkId = window.ethereum.networkVersion
+        let network = defineNetwork(networkId)
+        this.setState({ network: network.network })
     }
 
 
     displayBalances = async () => {
         let maker = this.props.maker;
-        let ethBalance = await maker.getToken('ETH').balanceOf(maker.currentAddress())
-        let BATBalance = await maker.getToken('BAT').balanceOf(maker.currentAddress());
-        let MDAIBalance = await maker.getToken('MDAI').balanceOf(maker.currentAddress());
-        let showFaucetButton = BATBalance.toString() === '0.00 BAT' && MDAIBalance.toString() === '0.00 MDAI' ? true : false;
-        this.setState({ ETH: ethBalance.toString(), BAT: BATBalance.toString(), MDAI: MDAIBalance.toString(), showFaucetButton });
+        try {
+            let ethBalance = await maker.getToken('ETH').balanceOf(maker.currentAddress())
+            let BATBalance = await maker.getToken('BAT').balanceOf(maker.currentAddress());
+            let MDAIBalance = await maker.getToken('MDAI').balanceOf(maker.currentAddress());
+            let showFaucetButton = BATBalance.toString() === '0.00 BAT' && MDAIBalance.toString() === '0.00 MDAI' ? true : false;
+            this.setState({ ETH: ethBalance.toString(), BAT: BATBalance.toString(), MDAI: MDAIBalance.toString(), showFaucetButton });
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     updateBalance = async () => {
@@ -86,16 +94,27 @@ class UserInfo extends React.Component {
         return (
             <div>
                 <Card width={'420px'} mx={'auto'} px={4}>
-                    <Text
-                        caps
-                        fontSize={0}
-                        fontWeight={4}
-                        mb={3}
-                        display={'flex'}
-                        alignItems={'center'}
-                    >
-                        Account Info:
-                     </Text>
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Text
+                            caps
+                            fontSize={0}
+                            fontWeight={4}
+                            mb={2}
+                            alignItems={'center'}
+                        >
+                            Account Info:
+                        </Text>
+                        <Text
+                            caps
+                            fontSize={0}
+                            fontWeight={4}
+                            mb={1}
+                            alignItems={'right'}
+                        >
+                            {` ${this.state.network} network`}
+                        </Text>
+
+                    </div>
                     <Text>{this.props.maker.currentAddress()}</Text>
                     <Text> {this.state.ETH}</Text>
                     <Flex>
@@ -153,17 +172,17 @@ class UserInfo extends React.Component {
                             </Button>
                         : ''
                 }
-                <hr />
-                <div>
+                {/* <hr /> */}
+                {/* <div>
                     <Button onClick={this.leverage} size="small">Try Leverage 1 200 0.1</Button>
-                </div>
-                <hr />
-                <div>
+                </div> */}
+                {/* <hr /> */}
+                {/* <div>
                     <Button onClick={sell5Dai} size='small'>Sell 5 Dai</Button>
                 </div>
-                <div style={{margin: '5px'}}>
+                <div style={{ margin: '5px' }}>
                     <Button onClick={buyDai} size='small'>Buy 5 Dai</Button>
-                </div>
+                </div> */}
             </div>
         )
     }
