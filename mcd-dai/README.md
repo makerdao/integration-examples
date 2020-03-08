@@ -4,13 +4,13 @@ This example uses the the [dai-mcd-plugin](https://github.com/makerdao/dai.js/tr
 
 
 In this example you can: 
-- Request kovan BAT token from faucet to interact with MCD system
+- Request kovan/goerli/rinkeby/ropsten BAT token from faucet to interact with MCD system
 - Lock BAT token in the Vault and receive MDAI
 - Payback MDAI and withdraw BAT token from Vault   
 
 ### Prerequisites
  - Have Metamask in your browser
- - Kovan ETH in your wallet
+ - Kovan/goerli/rinkeby/ropsten ETH in your wallet
 
 ### Steps to run the example:
  - Navigate to `mcd-dai` folder 

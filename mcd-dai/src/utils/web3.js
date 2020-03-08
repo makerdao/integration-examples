@@ -5,6 +5,7 @@ import dsTokenAbi from './dsToken.abi.json';
 import rinkebyAddresses from '../references/contracts/rinkeby.json'
 import goerliAddresses from '../references/contracts/goerli';
 import ropstenAddresses from '../references/contracts/ropsten';
+import kovanAddresses from '../references/contracts/kovan.json'
 //import MakerOtc from 'dai-plugin-maker-otc'
 
 let maker = null;
@@ -26,6 +27,9 @@ const outputAddresses = (networkId) => {
             break;
         case 5:
             contractAddresses = goerliAddresses
+            break;
+        case 42:
+            contractAddresses = kovanAddresses
             break;
         default:
             return contractAddresses;
@@ -80,7 +84,6 @@ const defineNetwork = (networkId) => {
 const connect = async (networkId) => {
     let networkNumber = await networkId;
     let network = defineNetwork(networkNumber);
-    console.log('network object', network);
     const addressOverrides = ['rinkeby', 'ropsten', 'goerli'].some(
         networkName => networkName === network.network
     )
@@ -101,7 +104,6 @@ const connect = async (networkId) => {
         },
     };
     outputAddresses(networkId)
-    console.log('Contract Addresses', contractAddresses);
     maker = await Maker.create('browser', config);
     await maker.authenticate();
     await maker.service('proxy').ensureProxy();

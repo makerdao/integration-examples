@@ -131,18 +131,18 @@ class UserInfo extends React.Component {
                     </Flex>
                 </Card>
                 {this.state.BAT === '0.00 BAT' ? '' :
-                    this.state.BAT !== '150.00 BAT' ? <Pill color='red'>Acquire 150 BAT</Pill> :
-                        (this.state.BAT === '150.00 BAT' && this.state.approveBAT === true
+                    this.state.BAT < '150.00 BAT' ? <Pill color='red'>Acquire BAT</Pill> :
+                        (this.state.BAT >= '150.00 BAT' && this.state.approveBAT === true
                             ?
                             <Button size='small'
                                 onClick={this.lockCollateral}
                             >
                                 {
-                                    this.state.lockBAT === true && this.state.BAT === '150.00 BAT' ? <Loader color='white' /> : 'Lock 150 BAT and Draw 20 Dai'
+                                    this.state.lockBAT === true && this.state.BAT >= '150.00 BAT' ? <Loader color='white' /> : 'Lock 150 BAT and Draw 20 Dai'
                                 }
                             </Button>
                             :
-                            this.state.BAT === '0.00 BAT' && this.state.MDAI !== '0.00 MDAI' ? '' :
+                            this.state.BAT <= '150.00 BAT' && this.state.MDAI !== '0.00 MDAI' ? '' :
                                 <Button size='small'
                                     onClick={this.approveBAT}
                                 >

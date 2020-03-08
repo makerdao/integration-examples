@@ -16,9 +16,7 @@ class App extends React.Component {
   handleMetamask = async () => {
     this.setState({load: true})
     let networkId = window.ethereum.networkVersion
-    console.log('Id', networkId);
     maker = await connect(networkId)
-    console.log('maker in app', maker);
     getWeb3()
     this.setState({ maker: true});
   }
@@ -31,6 +29,7 @@ class App extends React.Component {
         <h1>MakerDAO Dai MCD Plugin Demo</h1>
         <p>For this demo: use kovan, goerli, rinkeby or ropsten networks and have some ETH on the network you are using</p>
         <p>This is based on the <a href='https://changelog.makerdao.com/' target="_blanka" > 1.0.2 Release</a></p>
+        <p>If opening app for the first time, you'll be asked to create a proxy contract, which will help handle your interactions with the Maker Protocol</p>
         {
           connected ? <UserInfo maker={maker} /> : (
             <MetaMaskButton.outline
