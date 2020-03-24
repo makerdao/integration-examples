@@ -9,11 +9,13 @@ class DsrDemo extends React.Component {
         ETH: "0.00 ETH",
         MDAI: "0.00 MDAI",
         DSR: "0.00 MDAI",
+        RATE: ''
     }
 
     componentWillMount() {
         this.displayBalances();
         this.updateBalance();
+        this.getYearlyRate()
     }
 
 
@@ -54,6 +56,13 @@ class DsrDemo extends React.Component {
         await dsrManager.exitAll();
     }
 
+    getYearlyRate = async () => {
+        let maker = this.props.maker;
+        let rate = await maker.service('mcd:savings').getYearlyRate();
+        let dsr = (100*(rate.toFixed(2)-1))
+        this.setState({RATE: dsr.toFixed(2)})
+    }
+
     render() {
         return (
             <div>
@@ -68,14 +77,13 @@ class DsrDemo extends React.Component {
                     >
                         Account Info:
                      </Text>
+                     <Text>{`DSR ${this.state.RATE} %`} </Text>
                     <Text>{this.props.maker.currentAddress()}</Text>
                     <Text> {this.state.ETH}</Text>
                     <Flex>
                         <Text> {this.state.MDAI} </Text>
-
                     </Flex>
                     <Flex>
-
                         <Text> {this.state.DSR} in DSR </Text>
                     </Flex>
                 </Card>

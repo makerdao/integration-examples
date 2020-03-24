@@ -64,7 +64,7 @@ class UserInfo extends React.Component {
         this.setState({ lockBAT: true })
         let maker = this.props.maker;
         let cdpManager = await maker.service('mcd:cdpManager');
-        await cdpManager.openLockAndDraw('BAT-A', BAT(150), MDAI(20));
+        await cdpManager.openLockAndDraw('BAT-A', BAT(300), MDAI(20));
     }
 
     approveMDAI = async () => {
@@ -81,7 +81,7 @@ class UserInfo extends React.Component {
         let cdpManager = maker.service('mcd:cdpManager');
         let proxy = await maker.currentProxy();
         let cdps = await cdpManager.getCdpIds(proxy);
-        await cdpManager.wipeAndFree(cdps[0].id, 'BAT-A', MDAI(20), BAT(150))
+        await cdpManager.wipeAndFree(cdps[0].id, 'BAT-A', MDAI(20), BAT(300))
         this.setState({ approveBAT: false, approveDAI: false, lockBAT: false, payBack: false })
     }
 
