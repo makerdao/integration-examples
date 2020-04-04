@@ -181,6 +181,73 @@ const approveProxyInDai = async () => {
 
 }
 
+const batAllowance = async () => {
+    try {
+        let accounts = await web3.eth.getAccounts();
+        let proxy = await maker.currentProxy();
+        let BATAddress = contractAddresses.BAT
+        const BATAbi = dsTokenAbi;
+        const BATContract = new web3.eth.Contract(BATAbi, BATAddress);
+        return new Promise(async (resolve, reject) => {
+            await BATContract.methods.allowance(accounts[0], proxy).call({ from: accounts[0] }, (error, result) => {
+                if(error) {
+                    console.log('error in calling allowance mapping')
+                    reject(error)
+                }
+                // console.log('result in reading allowance mapping', result)
+                resolve(result)
+            })
+        })
+    } catch (error) {
+        console.log(error)
+    }
+
+}
+
+const daiAllowance = async () => {
+    try {
+        let accounts = await web3.eth.getAccounts();
+        let proxy = await maker.currentProxy();
+        let daiAddress = contractAddresses.MCD_DAI
+        const DAIAbi = dsTokenAbi;
+        const DAIContract = new web3.eth.Contract(DAIAbi, daiAddress);
+        return new Promise(async (resolve, reject) => {
+            await DAIContract.methods.allowance(accounts[0], proxy).call({ from: accounts[0] }, (error, result) => {
+                if(error) {
+                    console.log('error in calling allowance mapping')
+                    reject(error)
+                }
+                // console.log('result in reading allowance mapping', result)
+                resolve(result)
+            })
+        })
+    } catch (error) {
+        console.log(error)
+    }
+
+}
+
+const doneInFaucet = async () => {
+    try {
+        let accounts = await web3.eth.getAccounts();
+        let BATAddress = contractAddresses.BAT
+        const faucetABI = FaucetABI;
+        const faucetAddress = contractAddresses.FAUCET
+        const faucetContract = new web3.eth.Contract(faucetABI, faucetAddress);
+        return new Promise(async (resolve, reject) => {
+            await faucetContract.methods.done(accounts[0],BATAddress).call({ from: accounts[0] }, (error, result) => {
+                if(error) {
+                    console.log('error in reading done in faucet')
+                    reject(error)
+                }
+                resolve(result)
+            })
+        })
+    }catch(error){
+        console.log(error)
+    }
+}
+
 const leverage = async (iterations = 2, priceFloor = 175, principal = 0.25) => {
     const cdpManager = maker.service('mcd:cdpManager');
     console.log('cdpManager', cdpManager)
@@ -276,5 +343,8 @@ export {
     leverage,
     sell5Dai,
     buyDai,
-    defineNetwork
+    defineNetwork,
+    batAllowance,
+    daiAllowance,
+    doneInFaucet
 };
