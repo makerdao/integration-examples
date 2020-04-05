@@ -52,7 +52,7 @@ class UserInfo extends React.Component {
             this.displayBalances()
             this.checkApprovals()
             doneInFaucet()
-        }, 5000)
+        }, 2000)
     }
 
     requestTokensFromFaucet = () => {
