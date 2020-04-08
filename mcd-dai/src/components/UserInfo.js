@@ -20,7 +20,9 @@ class UserInfo extends React.Component {
         batIsApproved: false,
         daiIsApproved: false,
         doneInFaucet: true, 
-        currentBatBalance: ''
+        currentBatBalance: '',
+        currentDaiBalance: '',
+        paybackDai: false
     }
 
     UNSAFE_componentWillMount() {
@@ -41,7 +43,8 @@ class UserInfo extends React.Component {
             this.allowedToGulp()
             let showFaucetButton = !this.state.doneInFaucet;
             let currentBatBalance = Number(BATBalance.toString().slice(0,-4))
-            this.setState({ ETH: ethBalance.toString(), BAT: BATBalance.toString(), MDAI: MDAIBalance.toString(), showFaucetButton, currentBatBalance });
+            let currentDaiBalance = Number(MDAIBalance.toString().slice(0,-5))
+            this.setState({ ETH: ethBalance.toString(), BAT: BATBalance.toString(), MDAI: MDAIBalance.toString(), showFaucetButton, currentBatBalance, currentDaiBalance });
         } catch (error) {
             console.log(error);
         }
@@ -87,7 +90,7 @@ class UserInfo extends React.Component {
         let cdpManager = await maker.service('mcd:cdpManager');
         await cdpManager.openLockAndDraw('BAT-A', BAT(300), MDAI(20));
         setTimeout(() => {
-            this.setState({lockBAT: false})
+            this.setState({lockBAT: false, paybackDai: true})
         },15000)
     }
 
@@ -111,7 +114,7 @@ class UserInfo extends React.Component {
         let proxy = await maker.currentProxy();
         let cdps = await cdpManager.getCdpIds(proxy);
         await cdpManager.wipeAndFree(cdps[0].id, 'BAT-A', MDAI(20), BAT(300))
-        this.setState({ payBack: false })
+        this.setState({ payBack: false, paybackDai: false })
     }
 
     leverage = () => {
@@ -184,13 +187,13 @@ render() {
                     <Text> {this.state.BAT}
                         {
                             this.state.showFaucetButton ?
-                                <Button size='small' onClick={this.requestTokensFromFaucet}>{loadRequest ? <Loader color='white' /> : 'Request BAT from faucet'}</Button> : ''
+                                <Button disabled={loadRequest} size='small' onClick={this.requestTokensFromFaucet}>{loadRequest ? <Loader color='white' /> : 'Request BAT from faucet'}</Button> : ''
                         }
                     </Text>
 
                 </Flex>
                 <Flex>
-                    <Text> {this.state.MDAI} </Text>
+                    <Text> {this.state.currentDaiBalance} Dai </Text>
                 </Flex>
             </Card>
 
@@ -227,6 +230,7 @@ render() {
                         m={1}
                         size='small'
                         onClick={this.lockCollateral}
+                        disabled={this.state.lockBAT}
                     >
                         {
                             this.state.lockBAT === true ? <Loader color='white' /> : 'Lock 300 BAT and Draw 20 Dai'
@@ -237,11 +241,12 @@ render() {
                 )
 
             }
-            {this.state.batIsApproved && this.state.daiIsApproved ?
+            {this.state.batIsApproved && this.state.daiIsApproved && this.state.paybackDai ?
                  
                     <Button 
                         m={1}
                         size='small'
+                        disabled={this.state.payBack}
                         onClick={this.payBackCollateral}
                     >
                         { this.state.payBack === true ? <Loader color='white' /> : 'Pay Back 20 MDAI'}

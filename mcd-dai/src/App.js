@@ -4,6 +4,10 @@ import './App.css';
 import { MetaMaskButton, Loader } from 'rimble-ui'
 import { connect, getWeb3 } from './utils/web3';
 
+let networkId = window.ethereum.networkVersion
+if (networkId === '1') {
+  alert('change to a testnet network')
+}
 
 let maker = null;
 
@@ -11,19 +15,27 @@ class App extends React.Component {
   state = {
     maker: 'false',
     load: false,
-    network: ''
+    networkId: ''
   }
+
+  static getDerivedStateFromProps(props, state) {
+    networkId = window.ethereum.networkVersion
+    return state.networkId = networkId
+  }
+
   handleMetamask = async () => {
-    this.setState({load: true})
-    let networkId = window.ethereum.networkVersion
+    this.setState({ load: true })
+    networkId = window.ethereum.networkVersion
     maker = await connect(networkId)
     getWeb3()
-    this.setState({ maker: true});
+    this.setState({ maker: true });
   }
-  
+
   render() {
+    networkId = window.ethereum.networkVersion
     let connected = this.state.maker === true ? true : false
-  
+    let disabled = networkId === '1' ? true : false
+
     return (
       <div className="App" >
         <h1>MakerDAO Dai MCD Plugin Demo</h1>
@@ -33,12 +45,13 @@ class App extends React.Component {
         {
           connected ? <UserInfo maker={maker} /> : (
             <MetaMaskButton.outline
+              disabled={disabled}
               onClick={this.handleMetamask}
             >
-              {this.state.load ? <Loader color='black'/> :'Connect With Metamask'}
+              {this.state.load ? <Loader color='black' /> : 'Connect With Metamask'}
             </MetaMaskButton.outline>
           )
-        }        
+        }
       </div>
     );
 
