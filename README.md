@@ -40,14 +40,14 @@ To set your private key:
 
 ### topup
 
-Prevent your CDP from getting liquidated (automated risk management) -- "top it up" with collateral to stay above a target collateralization ratio.
+Prevent your Vault from getting liquidated (automated risk management) -- "top it up" with collateral to stay above a target collateralization ratio.
 
 __Example usage__
 ```shell
 export PRIVATE_KEY=0xabc... # your key goes here
 export NETWORK='kovan' # choose your network here
 cd topup
-babel-node . 1234 -t 2.5 -v
+node . 1234 -t 2.5 -v
 ```
 * The first argument is a CDP ID.
 * The value for the `-t` argument is the target ratio.
