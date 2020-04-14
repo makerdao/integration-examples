@@ -38,11 +38,16 @@ To set your private key:
 * Add your key (as a string) where prompted in `.env`
 
 
-### topup
+### TopUp
 
 Prevent your Vault from getting liquidated (automated risk management) -- "top it up" with collateral to stay above a target collateralization ratio.
 
 __Example usage__
+
+Run `yarn install` or `npm install`
+
+NB: One way to get your pivate key is to do it trough Metamask. Click on `Details` button and then on the `Export Private Key` button in your wallet account. 
+
 ```shell
 export PRIVATE_KEY=0xabc... # your key goes here
 export NETWORK='kovan' # choose your network here
