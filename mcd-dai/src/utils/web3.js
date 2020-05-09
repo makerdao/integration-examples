@@ -324,8 +324,8 @@ const leverage = async (iterations = 2, priceFloor = 175, principal = 0.25) => {
 
 const sell5Dai = async () => {
     let tx = await maker.service('exchange').sellDai('5', 'WETH', '0.001');
-    console.log('Seeling 5 Dai', tx)
-    console.log('Seeling 5 Dai', tx.fillAmount())
+    console.log('Selling 5 Dai', tx)
+    console.log('Selling 5 Dai', tx.fillAmount())
 }
 
 const buyDai = async () => {
