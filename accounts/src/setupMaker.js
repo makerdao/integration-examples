@@ -20,21 +20,23 @@ const TESTNET_URL = 'http://localhost:2000';
 
 export default async function(useMetaMask) {
   window.Maker = Maker;
-  const maker = Maker.create(useMetaMask ? 'browser' : 'http', {
+  const maker = await Maker.create(useMetaMask ? 'browser' : 'http', {
     url: TESTNET_URL,
     plugins: [trezorPlugin, ledgerPlugin],
     accounts: {
       test1: { type: 'privateKey', key: keys[0] }
-    }
+    },
+    autoAuthenticate: false
   });
 
+  window.maker = maker;
   await maker.authenticate();
+
   if (maker.service('web3').networkId() !== 999) {
     alert(
       'To work with testchain accounts, configure MetaMask to use ' +
         `"Custom RPC" with address "${TESTNET_URL}".`
     );
   }
-  window.maker = maker;
   return maker;
 }
